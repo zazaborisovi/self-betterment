@@ -7,8 +7,8 @@ const http = require("http")
 const {Server} = require("socket.io")
 
 // api imports
-
 const authRouter = require("./router/auth.routes")
+const friendRouter = require("./router/friend.routes")
 
 // app initialization
 const app = express()
@@ -35,8 +35,8 @@ io.on("connection", (socket) =>{
 })
 
 // api
-
 app.use("/api/auth", authRouter)
+app.use("/api/friends", friendRouter)
 
 // database / server connection
 mongoose.connect(process.env.MONGODB_URI).then(() =>{
