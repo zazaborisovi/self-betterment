@@ -9,6 +9,8 @@ const {Server} = require("socket.io")
 // api imports
 const authRouter = require("./router/auth.routes")
 const friendRouter = require("./router/friend.routes")
+const taskRouter = require("./router/tasks.routes")
+const userRouter = require("./router/user.routes")
 
 // app initialization
 const app = express()
@@ -16,7 +18,7 @@ const app = express()
 // middleware
 app.use(express.json())
 app.use(cors({
-    origin: "*",
+    origin: "http://localhost:5173",
     credentials: true
 }))
 app.use(cookieParser())
@@ -24,7 +26,7 @@ app.use(cookieParser())
 const server = http.createServer(app)
 const io = new Server(server, {
     cors:{
-        origin: "*",
+        origin: "http://localhost:5173",
         credentials: true
     }
 })
@@ -37,6 +39,8 @@ io.on("connection", (socket) =>{
 // api
 app.use("/api/auth", authRouter)
 app.use("/api/friends", friendRouter)
+app.use("/api/tasks", taskRouter)
+app.use("/api/user", userRouter)
 
 // database / server connection
 mongoose.connect(process.env.MONGODB_URI).then(() =>{

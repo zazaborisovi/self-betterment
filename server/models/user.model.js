@@ -38,10 +38,13 @@ const UserSchema = new mongoose.Schema({
         mind: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}},
         soul: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}}
     },
+    choices:[{
+        type: String
+    }]
     
 }, {timestamps: true})
 
-UserSchema.pre("save", async function(next){
+UserSchema.pre("save", async function(){
     if(this.isModified("password")){
         this.password = await bcrypt.hash(this.password, 10)
     }
@@ -56,7 +59,7 @@ UserSchema.pre("save", async function(next){
         }
     })
     
-    next()
+    return
 })
 
 UserSchema.methods.comparePassword = async function(candidatePassword){

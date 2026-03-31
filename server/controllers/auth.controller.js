@@ -53,8 +53,12 @@ const signIn = async(req , res) =>{
     }
 }
 
+const autoSignIn = async(req , res) =>{
+    res.status(200).json({user: req.user , message: "loaded"})
+}
+
 const signOut = async(req , res) =>{
     res.clearCookie(process.env.COOKIE_NAME).json({message: "signed out successfully"})
 }
 
-module.exports = {signUp , signIn , signOut}
+module.exports = {signUp , signIn , signOut , autoSignIn}
