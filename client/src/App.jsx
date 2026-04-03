@@ -10,32 +10,48 @@ import TaskProvider from './contexts/taskContext'
 import Choices from './pages/Choices'
 import UserProvider from './contexts/userContext'
 // import { Settings } from './pages/Settings'
+import SocketProvider from "./contexts/socketContext"
+import Nav from './pages/components/Nav'
+import LeaderboardProvider from './contexts/leaderboardContext'
+import AdminProvider from './contexts/adminContext'
+import AdminPanel from './pages/AdminPanel'
 
 function App() {
   return (
     <>
       <AuthProvider>
-        {/* <Nav /> */}
-        <Routes>
-          <Route path="/signup" element={<SignupPage />} />
-          <Route path="/signin" element={<SigninPage />} />
-          
-          <Route element={<Protect />}>
-            <Route path="/" element={
-                <TaskProvider>
-                    <Main />
-                </TaskProvider>
+        <SocketProvider>
+          <Nav />
+          <Routes>
+            <Route path="/signup" element={<SignupPage />} />
+            <Route path="/signin" element={<SigninPage />} />
+            
+            <Route element={<Protect />}>
+              <Route path="/" element={
+                  <TaskProvider>
+                      <Main />
+                  </TaskProvider>
+                } />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/leaderboard" element={
+                <LeaderboardProvider>
+                  <Leaderboard />
+                </LeaderboardProvider>
               } />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/leaderboard" element={<Leaderboard />} />
-            <Route path="/choices" element={
-              <UserProvider>
-                <Choices />
-              </UserProvider>
-            } />
-            {/* <Route path="/settings" element={<Settings />} /> */}
-          </Route>
-        </Routes>
+              <Route path="/choices" element={
+                <UserProvider>
+                  <Choices />
+                </UserProvider>
+              } />
+              <Route path="/admin" element={
+                <AdminProvider>
+                  <AdminPanel />
+                </AdminProvider>
+              } />
+              {/* <Route path="/settings" element={<Settings />} /> */}
+            </Route>
+          </Routes>
+        </SocketProvider>
       </AuthProvider>
       <ToastContainer />
     </>

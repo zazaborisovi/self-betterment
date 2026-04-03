@@ -22,7 +22,7 @@ export const GeneralForm = ({ func }) => {
     <div className="min-h-screen flex flex-col justify-center items-center px-4 md:-mt-20">
       <div className="w-full max-w-md bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-3xl shadow-2xl p-8 sm:p-10 border border-gray-200/50 dark:border-gray-700/50 transition-all duration-300">
       <div className="mb-8 text-center">
-        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600 dark:from-blue-400 dark:to-purple-400 mb-2">
+        <h1 className="text-3xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-purple-600 to-blue-500 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 mb-2">
           {isSignup ? "Create Account" : "Welcome Back"}
         </h1>
         <p className="text-gray-500 dark:text-gray-400 text-sm">
@@ -98,7 +98,7 @@ export const GeneralForm = ({ func }) => {
 
         <button 
           type="submit" 
-          className="w-full mt-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
+          className="w-full mt-2 bg-linear-to-r from-indigo-600 via-purple-600 to-blue-500 hover:from-indigo-700 hover:via-purple-700 hover:to-blue-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
         >
           {isSignup ? "Create Account" : "Sign In"}
         </button>

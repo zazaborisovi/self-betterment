@@ -5,17 +5,10 @@ const SocketContext = createContext()
 export const useSocket = () => useContext(SocketContext)
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL
+const socket = io(SOCKET_URL , {withCredentials: true})
 
 const SocketProvider = ({children}) =>{
-    const socketRef = useRef(null)
-
-    useEffect(() =>{
-        (async()=>{
-            socketRef.current = io(SOCKET_URL , {
-                withCredentials : true
-            })
-        })()
-    },[])
+    const socketRef = useRef(socket)
 
     return (
         <SocketContext.Provider value={{socketRef}}>

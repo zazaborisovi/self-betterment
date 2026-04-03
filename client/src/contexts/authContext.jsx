@@ -54,7 +54,7 @@ const AuthProvider = ({children}) =>{
 
             toast.update(toastId , {type: "success" , message: data.message , isLoading: false , autoClose: 3000})
             setUser(data.user)
-            navigate("/")
+            navigate("/choices")
         }catch(err){
             console.log(err)
             toast.update(toastId , {type: "error" , message: err.message , isLoading: false , autoClose: 3000})
@@ -79,7 +79,7 @@ const AuthProvider = ({children}) =>{
 
             toast.update(toastId , {type: "success" , message: data.message , isLoading: false , autoClose: 3000})
             setUser(data.user)
-            navigate("/")
+            data.user.choices.length > 0 ? navigate("/") : navigate("/choices")
         }catch(err){
             console.log(err)
             toast.update(toastId , {type: "error" , message: "Something went wrong" , isLoading: false , autoClose: 3000})

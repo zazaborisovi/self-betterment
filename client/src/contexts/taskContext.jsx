@@ -1,4 +1,6 @@
 import { createContext , useContext , useState , useEffect } from "react";
+import { useAuth } from "./authContext";
+import { useSocket } from "./socketContext";
 
 const TaskContext = createContext()
 export const useTask = () => useContext(TaskContext)
@@ -7,6 +9,18 @@ const API_URL = import.meta.env.VITE_API_URL + "/tasks"
 
 const TaskProvider = ({ children }) =>{
     const [tasks , setTasks] = useState([])
+    const {socketRef} = useSocket()
+    const {user} = useAuth()
+
+    useEffect(() =>{
+        const socket = socketRef.current
+
+        if(!socket) return
+
+        socket.on("task-completed" , (data) =>{
+            setTasks(data.taskObj.tasks)
+        })
+    },[socketRef])
 
     useEffect(() =>{
         (async() =>{
@@ -50,8 +64,12 @@ const TaskProvider = ({ children }) =>{
         })()
     },[])
 
+    const completeTask = async(id) =>{
+        socketRef.current.emit("complete-task" , {taskId: id})
+    }
+
     return(
-        <TaskContext.Provider value={{tasks}}>
+        <TaskContext.Provider value={{tasks , completeTask}}>
             {children}
         </TaskContext.Provider>
     )

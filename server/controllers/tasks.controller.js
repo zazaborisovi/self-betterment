@@ -28,7 +28,7 @@ const dailyTasks = async (req , res) =>{
 
 const completeTask = async (req , res) =>{
     try{
-        const {taskId} = req.body
+        const taskId = req.params.id
         
         const user = await User.findById(req.user._id)
         const userTasks = await UserTasks.findOne({userId: req.user._id})
@@ -40,7 +40,7 @@ const completeTask = async (req , res) =>{
         if(!task) return res.status(404).json({message: "Task not found"})
         if(task.isCompleted) return res.status(400).json({message: "Task already completed"})
 
-        task.isCompleted = true
+        task.isCompleted = !task.isCompleted
         user.xp += task.xpValue
 
         await Promise.all([user.save(), userTasks.save()])
