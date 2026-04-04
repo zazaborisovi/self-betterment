@@ -13,12 +13,20 @@ const completeTask = async (socket , socketUser , data) =>{
         const task = taskObj.tasks.id(taskId)
         if(!task) return socket.emit("error" , {message:"Task not found"})
 
+        const taskCategory = task.category
+            
         task.isCompleted = !task.isCompleted
-        user.xp = task.isCompleted ? user.xp + task.xpValue : user.xp - task.xpValue
+        user.xp += task.isCompleted ? task.xpValue : -task.xpValue
+
+        user.skills[taskCategory].xp += task.isCompleted ? task.xpValue : -task.xpValue
 
         await Promise.all([user.save() , taskObj.save()])
 
-        socket.emit("task-completed" , {taskObj})
+        socket.emit("task-completed" , {taskObj , update:{
+            xp: user.xp,
+            skills: user.skills,
+            rank: user.rank
+        }})
     }catch(err){
         console.log(err)
         socket.emit("error" , {message:"Something went wrong"})

@@ -14,7 +14,7 @@ const FriendProvider = ({children}) =>{
     useEffect(() =>{
         (async() =>{
             try{
-                const res = await fetch(API_URL + "/" , {method: "GET"})
+                const res = await fetch(API_URL + "/" , {method: "GET" })
                 const data = await res.json()
                 
                 if(!res.ok) return console.log(data.message)
@@ -39,5 +39,40 @@ const FriendProvider = ({children}) =>{
         })()
     }, [])
 
+    useEffect(() =>{
+        socketRef.current.on("friend-request-received" , (data) =>{
+            setFriendRequests(prev => [...prev , data])
+        })
+
+        socketRef.current.on("friend-request-accepted" , (data) =>{
+            setFriends(prev => [...prev , data])
+        })
+
+        socketRef.current.on("friend-request-rejected" , (data) =>{
+            setFriendRequests(prev => prev.filter(request => request._id !== data._id))
+        })
+
+        socketRef.current.on("friend-removed" , (data) =>{
+            setFriends(prev => prev.filter(friend => friend._id !== data._id))
+        })
+    }, [])
+
+    const sendFriendRequest = async(to) =>{
+        socketRef.current.emit("send-friend-request" , {to})
+    }
+    const acceptFriendRequest = async(from) =>{
+        socketRef.current.emit("accept-friend-request" , {from})
+    }
+    const rejectFriendRequest = async(from) =>{
+        socketRef.current.emit("reject-friend-request" , {from})
+    }
+
+    return(
+        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest}}>
+            {children}
+        </FriendContext.Provider>
+    )
     
 }
+
+export default FriendProvider

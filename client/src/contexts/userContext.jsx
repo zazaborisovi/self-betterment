@@ -34,8 +34,24 @@ const UserProvider = ({children}) =>{
         }
     }
 
+    const getUserProfile = async (id) => {
+        try {
+            const res = await fetch(API_URL + `/profile/${id}`, { method: "GET", credentials: "include" })
+            const data = await res.json()
+
+            if (!res.ok) {
+                console.log(data.message)
+                return null
+            }
+
+            return data
+        } catch (err) {
+            console.log(err.message)
+            return null
+        }
+    }
     return(
-        <UserContext.Provider value={{options , setOptions , setUserOptions}}>
+        <UserContext.Provider value={{options , setOptions , setUserOptions , getUserProfile}}>
             {children}
         </UserContext.Provider>
     )

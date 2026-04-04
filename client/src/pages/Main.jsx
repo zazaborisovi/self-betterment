@@ -89,18 +89,55 @@ const Main = () =>{
                                         </div>
                                         
                                         <div className="flex items-center justify-between gap-4 mt-2 mb-2">
-                                            <h3 className={`text-xl font-bold transition-colors duration-300 ${isCompleted ? 'text-slate-400 dark:text-slate-500 line-through decoration-slate-400/50' : 'text-slate-800 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400'}`}>
-                                                {task.task}
-                                            </h3>
+                                            <div className="flex flex-col">
+                                                <h3 className={`text-xl font-bold transition-colors duration-300 ${isCompleted ? 'text-slate-400 dark:text-slate-500 line-through decoration-slate-400/50' : 'text-slate-800 dark:text-slate-100 group-hover:text-purple-600 dark:group-hover:text-purple-400'}`}>
+                                                    {task.task}
+                                                </h3>
+                                                
+                                                {/* Task Details Row */}
+                                                <div className="flex flex-wrap items-center gap-3 mt-1.5">
+                                                    {task.quantity && task.unit && (
+                                                        <span className={`text-sm font-semibold ${isCompleted ? 'text-slate-400/60 dark:text-slate-500/60 line-through' : 'text-slate-600 dark:text-slate-300'}`}>
+                                                            {task.quantity} {task.unit}
+                                                        </span>
+                                                    )}
+                                                    {task.xpValue && (
+                                                        <span className={`flex items-center gap-1 text-sm font-bold ${isCompleted ? 'text-amber-500/50 dark:text-amber-400/50' : 'text-amber-500 dark:text-amber-400'}`}>
+                                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                                                            {task.xpValue} XP
+                                                        </span>
+                                                    )}
+                                                    {task.category && (
+                                                        <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-md border tracking-wider ${
+                                                            isCompleted 
+                                                            ? 'border-slate-300/50 text-slate-400/50 dark:border-slate-600/50 dark:text-slate-500/50' 
+                                                            : task.category === 'body' 
+                                                                ? 'border-red-200 text-red-600 dark:border-red-900/30 dark:text-red-400 bg-red-50 dark:bg-red-500/10'
+                                                                : task.category === 'mind'
+                                                                    ? 'border-blue-200 text-blue-600 dark:border-blue-900/30 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10'
+                                                                    : 'border-purple-200 text-purple-600 dark:border-purple-900/30 dark:text-purple-400 bg-purple-50 dark:bg-purple-500/10'
+                                                        }`}>
+                                                            {task.category}
+                                                        </span>
+                                                    )}
+                                                </div>
+                                            </div>
                                             {isCompleted ? (
-                                                <button 
-                                                    onClick={() => handleTaskCompletion(task._id)}
-                                                    className="flex-shrink-0 px-3 py-1.5 rounded-lg border border-slate-300 dark:border-slate-600 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-red-500 dark:hover:text-red-400 hover:border-red-500/50 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-300 active:scale-95 cursor-pointer"
+                                                <div 
+                                                    onClick={() => handleTaskCompletion(task._id)} 
+                                                    className="flex-shrink-0 h-9 w-9 rounded-xl border-2 border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-900/20 flex items-center justify-center cursor-pointer hover:bg-red-100 hover:border-red-400 dark:hover:bg-red-500/20 dark:hover:border-red-500 transition-all duration-300 active:scale-75 group/uncheck"
+                                                    title="Cancel Completion"
                                                 >
-                                                    Not Done
-                                                </button>
+                                                    <svg className="w-5 h-5 text-red-500 animate-[pulse_0.5s_cubic-bezier(0.4,0,0.6,1)_1] group-hover/uncheck:scale-125 group-hover/uncheck:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                                                        <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                                    </svg>
+                                                </div>
                                             ) : (
-                                                <div onClick={() => handleTaskCompletion(task._id)} className="flex-shrink-0 h-9 w-9 rounded-xl border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:bg-purple-500/10 hover:border-purple-500 transition-all duration-300 active:scale-75 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] group/check">
+                                                <div 
+                                                    onClick={() => handleTaskCompletion(task._id)} 
+                                                    className="flex-shrink-0 h-9 w-9 rounded-xl border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:bg-purple-500/10 hover:border-purple-500 transition-all duration-300 active:scale-75 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] group/check"
+                                                    title="Complete Task"
+                                                >
                                                     <svg className="w-5 h-5 text-purple-500 opacity-0 scale-0 group-hover/check:opacity-100 group-hover/check:scale-110 transition-all duration-300 ease-out origin-center" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
                                                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                                                     </svg>

@@ -15,6 +15,8 @@ import Nav from './pages/components/Nav'
 import LeaderboardProvider from './contexts/leaderboardContext'
 import AdminProvider from './contexts/adminContext'
 import AdminPanel from './pages/AdminPanel'
+import UserPage from './pages/UserPage'
+import FriendProvider from './contexts/friendContext'
 
 function App() {
   return (
@@ -50,6 +52,13 @@ function App() {
               } />
               {/* <Route path="/settings" element={<Settings />} /> */}
             </Route>
+            <Route path="/user/:id" element={
+              <UserProvider>
+                <FriendProvider>
+                  <UserPage />
+                </FriendProvider>
+              </UserProvider>
+            } />
           </Routes>
         </SocketProvider>
       </AuthProvider>

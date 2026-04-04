@@ -10,7 +10,7 @@ const API_URL = import.meta.env.VITE_API_URL + "/tasks"
 const TaskProvider = ({ children }) =>{
     const [tasks , setTasks] = useState([])
     const {socketRef} = useSocket()
-    const {user} = useAuth()
+    const {user , setUser} = useAuth()
 
     useEffect(() =>{
         const socket = socketRef.current
@@ -19,6 +19,7 @@ const TaskProvider = ({ children }) =>{
 
         socket.on("task-completed" , (data) =>{
             setTasks(data.taskObj.tasks)
+            setUser(prev => ({...prev , ...data.update}))
         })
     },[socketRef])
 
