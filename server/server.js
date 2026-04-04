@@ -48,7 +48,7 @@ io.on("connection", (socket) =>{
     }
 
     socket.on("complete-task" ,  async(data) =>{
-        await completeTask(socket , socketUser , data)
+        await completeTask(io , socket , socketUser , data)
     })
     socket.on("send-friend-request", async (data) =>{
         await sendFriendRequest(io , socket , socketUser , data)

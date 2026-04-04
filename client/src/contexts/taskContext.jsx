@@ -9,19 +9,23 @@ const API_URL = import.meta.env.VITE_API_URL + "/tasks"
 
 const TaskProvider = ({ children }) =>{
     const [tasks , setTasks] = useState([])
-    const {socketRef} = useSocket()
+    const {socket} = useSocket()
     const {user , setUser} = useAuth()
 
     useEffect(() =>{
-        const socket = socketRef.current
-
         if(!socket) return
 
-        socket.on("task-completed" , (data) =>{
+        const handleTaskCompletion = (data) =>{
             setTasks(data.taskObj.tasks)
             setUser(prev => ({...prev , ...data.update}))
-        })
-    },[socketRef])
+        }
+
+        socket.on("task-completed" , handleTaskCompletion)
+
+        return () =>{
+            socket.off("task-completed" , handleTaskCompletion)
+        }
+    },[socket])
 
     useEffect(() =>{
         (async() =>{
@@ -63,10 +67,10 @@ const TaskProvider = ({ children }) =>{
                 console.log(err)
             }
         })()
-    },[])
+    },[socket])
 
     const completeTask = async(id) =>{
-        socketRef.current.emit("complete-task" , {taskId: id})
+        socket.emit("complete-task" , {taskId: id})
     }
 
     return(

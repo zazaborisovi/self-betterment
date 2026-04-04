@@ -1,7 +1,7 @@
 const User = require("../models/user.model")
 const UserTasks = require("../models/user.tasks.model")
 
-const completeTask = async (socket , socketUser , data) =>{
+const completeTask = async (io , socket , socketUser , data) =>{
     try{
         const {taskId} = data
 
@@ -22,14 +22,14 @@ const completeTask = async (socket , socketUser , data) =>{
 
         await Promise.all([user.save() , taskObj.save()])
 
-        socket.emit("task-completed" , {taskObj , update:{
+        io.to(socketUser._id.toString()).emit("task-completed" , {taskObj , update:{
             xp: user.xp,
             skills: user.skills,
             rank: user.rank
         }})
     }catch(err){
         console.log(err)
-        socket.emit("error" , {message:"Something went wrong"})
+        io.to(socketUser._id.toString()).emit("error" , {message:"Something went wrong"})
     }
 }
 

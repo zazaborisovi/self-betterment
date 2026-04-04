@@ -1,14 +1,12 @@
-import { useAuth } from "../contexts/authContext";
 import { useTask } from "../contexts/taskContext"
 
 const Main = () =>{
     const {tasks , completeTask} = useTask()
-    const {user} = useAuth()
     const progress = 0
 
     const handleTaskCompletion = async(id) => {
         await completeTask(id)
-    }    
+    }
 
     return (
         <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-900 py-12 px-4 transition-colors duration-300 font-sans">
@@ -134,7 +132,7 @@ const Main = () =>{
                                                 </div>
                                             ) : (
                                                 <div 
-                                                    onClick={() => handleTaskCompletion(task._id)} 
+                                                    onClick={() => handleTaskCompletion(task._id)}
                                                     className="flex-shrink-0 h-9 w-9 rounded-xl border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:bg-purple-500/10 hover:border-purple-500 transition-all duration-300 active:scale-75 hover:shadow-[0_0_15px_rgba(168,85,247,0.4)] group/check"
                                                     title="Complete Task"
                                                 >
