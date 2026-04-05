@@ -6,18 +6,19 @@ const cookieParser = require("cookie-parser")
 const http = require("http")
 const {Server} = require("socket.io")
 const socketProtect = require("./middlewares/socketProtect")
+const Sentry = require("@sentry/node");
 
 // api imports
 const authRouter = require("./router/auth.routes")
 const friendRouter = require("./router/friend.routes")
 const taskRouter = require("./router/tasks.routes")
 const userRouter = require("./router/user.routes")
-const leaderboardRouter = require("./router/leaderboard.routes")
 const adminRouter = require("./router/admin.routes")
 
 // socket function imports
 const completeTask = require("./sockets/tasks.socket")
 const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend} = require("./sockets/friends.socket")
+const getLeaderboard = require("./sockets/leaderboard.socket")
 
 // app initialization
 const app = express()
@@ -62,6 +63,9 @@ io.on("connection", (socket) =>{
     socket.on("remove-friend", async (data) =>{
         await removeFriend(io , socket , socketUser , data)
     })
+    socket.on("leaderboard" , async() =>{
+        await getLeaderboard(io , socket)
+    })
 })
 
 // api
@@ -69,8 +73,17 @@ app.use("/api/auth", authRouter)
 app.use("/api/friends", friendRouter)
 app.use("/api/tasks", taskRouter)
 app.use("/api/user", userRouter)
-app.use("/api/leaderboard" , leaderboardRouter)
 app.use("/api/admin" , adminRouter)
+
+// sentry
+Sentry.setupExpressErrorHandler(app)
+
+Sentry.init({
+  dsn: "https://251d50b159b85eaa954433c4a8aaa3f5@o4511157497954304.ingest.us.sentry.io/4511168108888064",
+  // Setting this option to true will send default PII data to Sentry.
+  // For example, automatic IP address collection on events
+  sendDefaultPii: true,
+});
 
 // database / server connection
 mongoose.connect(process.env.MONGODB_URI).then(() =>{

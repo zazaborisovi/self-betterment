@@ -5,7 +5,7 @@ const Main = () =>{
     const progress = 0
 
     const handleTaskCompletion = async(id) => {
-        await completeTask(id)
+        await completeTask(id.toString())
     }
 
     return (

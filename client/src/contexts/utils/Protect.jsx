@@ -11,7 +11,7 @@ const Protect = ({ children }) => {
       navigate("signup")
   }, [loading, user, navigate])
   
-  if(loading) return <div>Loading...</div>
+  if(loading) return <div>loading...</div>
   
   return user ? <Outlet /> : null
 }

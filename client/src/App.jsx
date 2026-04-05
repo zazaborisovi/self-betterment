@@ -17,6 +17,7 @@ import AdminProvider from './contexts/adminContext'
 import AdminPanel from './pages/AdminPanel'
 import UserPage from './pages/UserPage'
 import FriendProvider from './contexts/friendContext'
+import Friends from './pages/Friends'
 
 function App() {
   return (
@@ -57,6 +58,11 @@ function App() {
                 <UserProvider>
                     <UserPage />
                 </UserProvider>
+              </FriendProvider>
+            } />
+            <Route path="friends" element={
+              <FriendProvider>
+                <Friends />
               </FriendProvider>
             } />
           </Routes>

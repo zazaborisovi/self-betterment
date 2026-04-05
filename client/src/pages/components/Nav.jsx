@@ -8,7 +8,8 @@ const Nav = () =>{
     const navItems = [
         { name: "Quests", path: "/" },
         { name: "Leaderboard", path: "/leaderboard" },
-        { name: "Profile", path: "/profile" }
+        { name: "Profile", path: "/profile" },
+        { name: "Friends" , path: "/friends"},
     ]
 
     return !user ? null : (

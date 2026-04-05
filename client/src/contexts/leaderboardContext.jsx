@@ -1,4 +1,5 @@
 import { createContext , useContext , useState , useEffect } from "react";
+import {useSocket} from "./socketContext"
 
 const LeaderboardContext = createContext()
 export const useLeaderboard = () => useContext(LeaderboardContext)
@@ -6,23 +7,24 @@ export const useLeaderboard = () => useContext(LeaderboardContext)
 const API_URL = import.meta.env.VITE_API_URL + "/leaderboard"
 
 const LeaderboardProvider = ({children}) =>{
+    const {socket} = useSocket()
     const [leaderboard , setLeaderboard] = useState(null)
 
     useEffect(() =>{
-        (async()=>{
-            try{
-                const res = await fetch(API_URL + "/", {method: "GET"})
-                const data = await res.json()
+        if(!socket) return
 
-                if(!res.ok) return console.log(data.message)
-                
-                console.log(data)
+        socket.emit("leaderboard")
+
+        socket.on("leaderboard-data" , (data) =>{
+            setLeaderboard(data.leaderboard)
+        })
+
+        return () =>{
+            socket.off("leaderboard-data" , (data) =>{
                 setLeaderboard(data.leaderboard)
-            }catch(err){
-                console.log(err.message)
-            }
-        })()
-    },[])
+            })
+        }
+    },[socket])
 
     return (
         <LeaderboardContext.Provider value={{leaderboard}}>

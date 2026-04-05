@@ -1,6 +1,7 @@
 import {createContext , useContext , useState , useEffect} from "react"
 import { toast } from "react-toastify"
-import { redirect, useNavigate } from "react-router"
+import { useNavigate } from "react-router"
+import * as Sentry from '@sentry/react';
 
 const API_URL = import.meta.env.VITE_API_URL + "/auth"
 
@@ -25,8 +26,7 @@ const AuthProvider = ({children}) =>{
 
                 const data = await res.json()
                 
-                if(!res.ok) return toast.update(toastId , {type: "error" , message: data.message , isLoading: false , autoClose: 3000})
-
+                if(!res.ok) return
                 setUser(data.user)
             }catch(err){
                 console.log(err.message)
