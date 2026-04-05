@@ -43,7 +43,6 @@ const UserProvider = ({children}) =>{
                 console.log(data.message)
                 return null
             }
-
             return data
         } catch (err) {
             console.log(err.message)

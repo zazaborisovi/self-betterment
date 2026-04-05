@@ -3,8 +3,9 @@ const {
     getFriendRequests,
     getFriends,
 } = require("../controllers/friend.controller")
+const protect = require("../middlewares/protect")
 
-friendRouter.get("/requests", getFriendRequests)
-friendRouter.get("/", getFriends)
+friendRouter.get("/requests", protect , getFriendRequests)
+friendRouter.get("/", protect , getFriends)
 
 module.exports = friendRouter

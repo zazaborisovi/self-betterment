@@ -1,6 +1,8 @@
+import { useNavigate } from "react-router"
 import { useLeaderboard } from "../contexts/leaderboardContext"
 
 const Leaderboard = () => {
+    const navigate = useNavigate()
     const { leaderboard } = useLeaderboard()
     
     return (
@@ -56,7 +58,7 @@ const Leaderboard = () => {
                                     
                                     <div className="flex-grow flex items-center justify-between">
                                         <div className="flex flex-col">
-                                            <span className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[150px] sm:max-w-[300px]">
+                                            <span className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[150px] sm:max-w-[300px]" onClick={() => navigate(`/user/${user._id}`)}>
                                                 {user.username}
                                             </span>
                                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">

@@ -23,6 +23,21 @@ const SocketProvider = ({children}) =>{
         }
     },[user?._id])
 
+    useEffect(() =>{
+        if(!socket) return
+
+        socket.on("error" , (data) =>{
+            toast.error(data.message)
+        })
+
+        return () =>{
+            socket.off("error" , (data) =>{
+                toast.error(data.message)
+            })
+        }
+    }, [socket])
+
+    
     return (
         <SocketContext.Provider value={{socketRef , socket}}>
             {children}

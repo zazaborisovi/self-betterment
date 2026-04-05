@@ -53,11 +53,11 @@ function App() {
               {/* <Route path="/settings" element={<Settings />} /> */}
             </Route>
             <Route path="/user/:id" element={
-              <UserProvider>
-                <FriendProvider>
-                  <UserPage />
-                </FriendProvider>
-              </UserProvider>
+              <FriendProvider>
+                <UserProvider>
+                    <UserPage />
+                </UserProvider>
+              </FriendProvider>
             } />
           </Routes>
         </SocketProvider>
