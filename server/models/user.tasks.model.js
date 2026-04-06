@@ -17,7 +17,7 @@ const userTasksSchema = new mongoose.Schema({
         category: {type: String , enum:["body" , "mind" , "soul"]},
         isCompleted: {type: Boolean , default: false},
     }],
-    createdAt: {type: Date , default: Date.now()}
+    createdAt: {type: Date , default: Date.now}
 }, {timestamps: true})
 
 const UserTasks = mongoose.model("UserTasks" , userTasksSchema)

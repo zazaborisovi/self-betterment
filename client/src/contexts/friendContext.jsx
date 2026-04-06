@@ -13,32 +13,27 @@ const FriendProvider = ({children}) =>{
     const [friends , setFriends] = useState(null)
 
     useEffect(() =>{
-        (async() =>{
-            try{
-                const res = await fetch(API_URL + "/" , {method: "GET" , credentials: "include"})
-                const data = await res.json()
-                
-                if(!res.ok) return console.log(data.message)
+        if(!socket) return
 
-                setFriends(data)
-            }catch(err){
-                console.log(err.message)
-            }
-        })();
+        socket.emit("get-friends")
+        socket.emit("get-friend-requests")
 
-        (async() =>{
-            try{
-                const res = await fetch(API_URL + "/requests" , {method: "GET" , credentials: "include"})
-                const data = await res.json()
-                
-                if(!res.ok) return console.log(data.message)
+        socket.on("friends" , (data) =>{
+            setFriends(data.friends)
+        })
+        socket.on("friend-requests" , (data) =>{
+            setFriendRequests(data.friendRequests)
+        })
 
-                setFriendRequests(data)
-            }catch(err){
-                console.log(err.message)
-            }
-        })()
-    }, [])
+        return () =>{
+            socket.off("friends" , (data) =>{
+                setFriends(data.friends)
+            })
+            socket.off("friend-requests" , (data) =>{
+                setFriendRequests(data.friendRequests)
+            })
+        }
+    }, [socket , friendRequests , friends])
 
     useEffect(() =>{
         if(!socket) return
@@ -62,22 +57,27 @@ const FriendProvider = ({children}) =>{
             toast.success(data.message)
             setFriends(prev => prev.filter(friend => friend._id !== data._id))
         }
-        
-        socket.on("friend-request-received" , friendRequestReceived)
-        socket.on("friend-request-sent" , friendRequestSent)
+        const cancelRequest = (data) =>{
+            toast.success(data.message)
+            setFriendRequests(prev => prev.filter(request => request._id !== data._id))
+        }
 
-        socket.on("friend-request-accepted" , friendRequestAccepted)
+        socket.on("friend-request-received", friendRequestReceived)
+        socket.on("friend-request-sent", friendRequestSent)
 
-        socket.on("friend-request-rejected" , friendRequestRejected)
+        socket.on("friend-request-accepted", friendRequestAccepted)
+        socket.on("friend-request-rejected", friendRequestRejected)
 
-        socket.on("friend-removed" , friendRemoved)
+        socket.on("friend-removed", friendRemoved)
+        socket.on("friend-request-cancelled", cancelRequest)
 
         return () =>{
-            socket.off("friend-request-received" , friendRequestReceived)
-            socket.off("friend-request-sent" , friendRequestSent)
-            socket.off("friend-request-accepted" , friendRequestAccepted)
-            socket.off("friend-request-rejected" , friendRequestRejected)
-            socket.off("friend-removed" , friendRemoved)
+            socket.off("friend-request-received", friendRequestReceived)
+            socket.off("friend-request-sent", friendRequestSent)
+            socket.off("friend-request-accepted", friendRequestAccepted)
+            socket.off("friend-request-rejected", friendRequestRejected)
+            socket.off("friend-removed", friendRemoved)
+            socket.off("friend-request-cancelled", cancelRequest)
         }
     }, [socket])
 
@@ -90,9 +90,12 @@ const FriendProvider = ({children}) =>{
     const rejectFriendRequest = async(from) =>{
         socket.emit("reject-friend-request" , {from})
     }
+    const cancelFriendRequest = async(requestId) =>{
+        socket.emit("cancel-friend-request" , {requestId})
+    }
 
     return(
-        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest , acceptFriendRequest , rejectFriendRequest}}>
+        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest , acceptFriendRequest , rejectFriendRequest , cancelFriendRequest}}>
             {children}
         </FriendContext.Provider>
     )

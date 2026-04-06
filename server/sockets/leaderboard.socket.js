@@ -1,6 +1,6 @@
 const User = require("../models/user.model")
 
-const getLeaderboard = async(io , socket) =>{
+const getGlobalLeaderboard = async(socket) =>{
     try{
         const leaderboard = await User.find().sort({xp : -1}).select("username xp rank")
 
@@ -11,4 +11,16 @@ const getLeaderboard = async(io , socket) =>{
     }
 }
 
-module.exports = getLeaderboard
+const getFriendLeaderboard = async(socket , socketUser) =>{
+    try{
+        const friends = await Frienship.find({
+            $or: [
+                {user1: socketUser._id},
+                {user2: socketUser._id}
+            ]
+        }).populate("user2" , "username xp")
+        
+    }
+}
+
+module.exports = {getGlobalLeaderboard , getFriendLeaderboard}

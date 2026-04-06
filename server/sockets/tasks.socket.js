@@ -6,7 +6,7 @@ const completeTask = async (io , socket , socketUser , data) =>{
         const {taskId} = data
 
         const user = await User.findById(socketUser._id)
-        const taskObj = await UserTasks.findOne({userId: user._id})
+        const taskObj = await UserTasks.findOne({userId: user._id}).sort({createdAt: -1})
 
         if(!user || !taskObj) return socket.emit("error" , {message:"User not found"})
 

@@ -60,7 +60,7 @@ function App() {
                 </UserProvider>
               </FriendProvider>
             } />
-            <Route path="friends" element={
+            <Route path="/friends" element={
               <FriendProvider>
                 <Friends />
               </FriendProvider>

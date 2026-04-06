@@ -10,14 +10,14 @@ const Sentry = require("@sentry/node");
 
 // api imports
 const authRouter = require("./router/auth.routes")
-const friendRouter = require("./router/friend.routes")
 const taskRouter = require("./router/tasks.routes")
 const userRouter = require("./router/user.routes")
 const adminRouter = require("./router/admin.routes")
+const oauthRouter = require("./router/oauth.routes")
 
 // socket function imports
 const completeTask = require("./sockets/tasks.socket")
-const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend} = require("./sockets/friends.socket")
+const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend, cancelFriendRequest, getFriends, getFriendRequests} = require("./sockets/friends.socket")
 const getLeaderboard = require("./sockets/leaderboard.socket")
 
 // app initialization
@@ -48,8 +48,17 @@ io.on("connection", (socket) =>{
         socket.join(socketUser._id.toString())
     }
 
+    // task sockets
     socket.on("complete-task" ,  async(data) =>{
         await completeTask(io , socket , socketUser , data)
+    })
+
+    // friend sockets
+    socket.on("get-friends" , async() =>{
+        await getFriends(socket , socketUser)
+    })
+    socket.on("get-friend-requests" , async() =>{
+        await getFriendRequests(socket , socketUser)
     })
     socket.on("send-friend-request", async (data) =>{
         await sendFriendRequest(io , socket , socketUser , data)
@@ -63,17 +72,22 @@ io.on("connection", (socket) =>{
     socket.on("remove-friend", async (data) =>{
         await removeFriend(io , socket , socketUser , data)
     })
+    socket.on("cancel-friend-request", async (data) =>{
+        await cancelFriendRequest(socket , socketUser , data)
+    })
+
+    // leaderboard sockets
     socket.on("leaderboard" , async() =>{
-        await getLeaderboard(io , socket)
+        await getLeaderboard(socket)
     })
 })
 
 // api
 app.use("/api/auth", authRouter)
-app.use("/api/friends", friendRouter)
 app.use("/api/tasks", taskRouter)
 app.use("/api/user", userRouter)
 app.use("/api/admin" , adminRouter)
+app.use("/api/oauth", oauthRouter)
 
 // sentry
 Sentry.setupExpressErrorHandler(app)

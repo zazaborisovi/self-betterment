@@ -4,7 +4,7 @@ const generateDailyTasks = require("../utils/dailyTaskGenerator")
 
 const getTasks = async (req , res) =>{
     try{
-        const userTasks = await UserTasks.findOne({userId: req.user._id})
+        const userTasks = await UserTasks.findOne({userId: req.user._id}).sort({createdAt: -1})
 
         if(!userTasks) return res.status(404).json({message: "No tasks found" , success: false})
 
