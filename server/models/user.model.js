@@ -33,6 +33,14 @@ const UserSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
+    coins:{
+        type: Number,
+        default: 0
+    },
+    items:[{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Items"
+    }],
     skills:{
         body: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}},
         mind: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}},

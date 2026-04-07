@@ -18,7 +18,7 @@ const oauthRouter = require("./router/oauth.routes")
 // socket function imports
 const completeTask = require("./sockets/tasks.socket")
 const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend, cancelFriendRequest, getFriends, getFriendRequests} = require("./sockets/friends.socket")
-const getLeaderboard = require("./sockets/leaderboard.socket")
+const {getGlobalLeaderboard , getFriendLeaderboard} = require("./sockets/leaderboard.socket")
 
 // app initialization
 const app = express()
@@ -64,21 +64,24 @@ io.on("connection", (socket) =>{
         await sendFriendRequest(io , socket , socketUser , data)
     })
     socket.on("reject-friend-request", async (data) =>{
-        await rejectFriendRequest(io , socket , socketUser , data)
+        await rejectFriendRequest(socket , socketUser , data)
     })
     socket.on("accept-friend-request", async (data) =>{
         await acceptFriendRequest(io , socket , socketUser , data)
     })
     socket.on("remove-friend", async (data) =>{
-        await removeFriend(io , socket , socketUser , data)
+        await removeFriend(socket , socketUser , data)
     })
     socket.on("cancel-friend-request", async (data) =>{
         await cancelFriendRequest(socket , socketUser , data)
     })
 
     // leaderboard sockets
-    socket.on("leaderboard" , async() =>{
-        await getLeaderboard(socket)
+    socket.on("get-global-leaderboard" , async() =>{
+        await getGlobalLeaderboard(socket)
+    })
+    socket.on("get-friend-leaderboard" , async() =>{
+        await getFriendLeaderboard(socket , socketUser)
     })
 })
 

@@ -26,14 +26,10 @@ const FriendProvider = ({children}) =>{
         })
 
         return () =>{
-            socket.off("friends" , (data) =>{
-                setFriends(data.friends)
-            })
-            socket.off("friend-requests" , (data) =>{
-                setFriendRequests(data.friendRequests)
-            })
+            socket.off("friends")
+            socket.off("friend-requests")
         }
-    }, [socket , friendRequests , friends])
+    }, [socket])
 
     useEffect(() =>{
         if(!socket) return
@@ -47,19 +43,20 @@ const FriendProvider = ({children}) =>{
         }
         const friendRequestAccepted = (data) =>{
             toast.success(data.message)
-            setFriends(prev => [...prev , data])
+            socket.emit("get-friends")
+            socket.emit("get-friend-requests")
         }
         const friendRequestRejected = (data) =>{
             toast.success(data.message)
-            setFriendRequests(prev => prev.filter(request => request._id !== data._id))
+            socket.emit("get-friend-requests")
         }
         const friendRemoved = (data) =>{
             toast.success(data.message)
-            setFriends(prev => prev.filter(friend => friend._id !== data._id))
+            socket.emit("get-friends")
         }
         const cancelRequest = (data) =>{
             toast.success(data.message)
-            setFriendRequests(prev => prev.filter(request => request._id !== data._id))
+            socket.emit("get-friend-requests")
         }
 
         socket.on("friend-request-received", friendRequestReceived)
@@ -84,18 +81,21 @@ const FriendProvider = ({children}) =>{
     const sendFriendRequest = async(to) =>{
         socket.emit("send-friend-request" , {to})
     }
-    const acceptFriendRequest = async(from) =>{
-        socket.emit("accept-friend-request" , {from})
+    const acceptFriendRequest = async(requestId) =>{
+        socket.emit("accept-friend-request" , {requestId})
     }
-    const rejectFriendRequest = async(from) =>{
-        socket.emit("reject-friend-request" , {from})
+    const rejectFriendRequest = async(requestId) =>{
+        socket.emit("reject-friend-request" , {requestId})
+    }
+    const removeFriend = async(friendshipId) =>{
+        socket.emit("remove-friend" , {friendshipId})
     }
     const cancelFriendRequest = async(requestId) =>{
         socket.emit("cancel-friend-request" , {requestId})
     }
 
     return(
-        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest , acceptFriendRequest , rejectFriendRequest , cancelFriendRequest}}>
+        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend , cancelFriendRequest}}>
             {children}
         </FriendContext.Provider>
     )

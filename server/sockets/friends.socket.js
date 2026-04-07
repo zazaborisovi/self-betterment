@@ -5,7 +5,7 @@ const User = require("../models/user.model")
 const getFriends = async(socket , socketUser) =>{
     try{
         const userId = socketUser._id.toString()
-        const friends = await Friendship.find({$or: [{user1:userId}, {user2:userId}]}).populate("user1", "username").populate("user2", "username")
+        const friends = await Friendship.find({$or: [{user1:userId}, {user2:userId}]}).populate("user1", "username rank xp").populate("user2", "username rank xp")
 
         socket.emit("friends" , {friends})
     }catch(err){
@@ -73,7 +73,7 @@ const acceptFriendRequest = async(io , socket , socketUser , data) =>{
     }
 }
 
-const rejectFriendRequest = async(io , socket , socketUser , data) => {
+const rejectFriendRequest = async(socket , socketUser , data) => {
     try{
         const {requestId} = data
         const userId = socketUser._id
@@ -90,7 +90,7 @@ const rejectFriendRequest = async(io , socket , socketUser , data) => {
     }
 }
 
-const removeFriend = async(io , socket , socketUser , data) =>{
+const removeFriend = async(socket , socketUser , data) =>{
     try{
         const {friendshipId} = data
         const friendship = await Friendship.findById(friendshipId)

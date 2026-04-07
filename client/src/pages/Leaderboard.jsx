@@ -1,28 +1,51 @@
 import { useNavigate } from "react-router"
+import { useState } from "react"
 import { useLeaderboard } from "../contexts/leaderboardContext"
+import { useAuth } from "../contexts/authContext"
 
 const Leaderboard = () => {
     const navigate = useNavigate()
-    const { leaderboard } = useLeaderboard()
+    const { user: currentUser } = useAuth()
+    const { globalLeaderboard , friendLeaderboard } = useLeaderboard()
+    const [viewType, setViewType] = useState('global') // 'global' or 'friends'
+    
+    const leaderboardData = viewType === 'global' ? globalLeaderboard : friendLeaderboard
     
     return (
         <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-900 py-12 px-4 transition-colors duration-300 font-sans">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
                 
                 {/* Header section */}
-                <div className="w-full mb-12 text-center space-y-4">
+                <div className="w-full mb-8 text-center space-y-4">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-yellow-400 via-amber-500 to-orange-500 tracking-tight drop-shadow-sm">
                         Hall of Fame
                     </h1>
                     <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl font-medium tracking-wide">
-                        Global Rankings & Top Achievers
+                        {viewType === 'global' ? 'Global Rankings & Top Achievers' : 'Friend Circle Rankings'}
                     </p>
+                </div>
+
+                {/* View Switcher */}
+                <div className="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-12 backdrop-blur-sm border border-slate-200 dark:border-slate-700 w-full max-w-md mx-auto">
+                    <button 
+                        onClick={() => setViewType('global')}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${viewType === 'global' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                    >
+                        Global
+                    </button>
+                    <button 
+                        onClick={() => setViewType('friends')}
+                        className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${viewType === 'friends' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
+                    >
+                        Friends
+                    </button>
                 </div>
 
                 {/* Leaderboard Cards Grid */}
                 <div className="w-full flex flex-col gap-4">
-                    {leaderboard?.map((user, index) => {
+                    {leaderboardData?.map((user, index) => {
                         const isTop3 = index < 3;
+                        const isCurrentUser = user._id === currentUser?._id;
                         let rankGlow = '';
                         let rankTextColors = '';
                         let positionBadgeColor = '';
@@ -48,7 +71,7 @@ const Leaderboard = () => {
                         return (
                             <div 
                                 key={user._id}
-                                className={`relative group flex items-center justify-between p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border transition-all duration-300 cursor-default overflow-hidden ${rankGlow}`}
+                                className={`relative group flex items-center justify-between p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border transition-all duration-300 cursor-default overflow-hidden ${rankGlow} ${isCurrentUser ? 'ring-2 ring-amber-500 dark:ring-amber-400 shadow-lg' : ''}`}
                             >
                                 {/* Position Badge */}
                                 <div className="flex items-center gap-4 md:gap-6 z-10 w-full">
@@ -58,9 +81,16 @@ const Leaderboard = () => {
                                     
                                     <div className="flex-grow flex items-center justify-between">
                                         <div className="flex flex-col">
-                                            <span className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[150px] sm:max-w-[300px]" onClick={() => navigate(`/user/${user._id}`)}>
-                                                {user.username}
-                                            </span>
+                                            <div className="flex items-center gap-3">
+                                                <span className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[120px] sm:max-w-[250px] cursor-pointer hover:text-amber-500 transition-colors" onClick={() => navigate(`/user/${user._id}`)}>
+                                                    {user.username}
+                                                </span>
+                                                {isCurrentUser && (
+                                                    <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">
+                                                        YOU
+                                                    </span>
+                                                )}
+                                            </div>
                                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
                                                 {user.xp} EXP
                                             </span>
@@ -82,10 +112,12 @@ const Leaderboard = () => {
                         )
                     })}
 
-                    {(!leaderboard || leaderboard.length === 0) && (
+                    {(!leaderboardData || leaderboardData.length === 0) && (
                         <div className="w-full p-16 bg-white dark:bg-slate-800 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-300 dark:border-slate-700">
                             <h2 className="text-2xl font-extrabold text-slate-800 dark:text-slate-200 mb-2">The Hall is Empty</h2>
-                            <p className="text-slate-500 dark:text-slate-400">No champions have risen yet. Start completing quests!</p>
+                            <p className="text-slate-500 dark:text-slate-400">
+                                {viewType === 'global' ? 'No champions have risen yet. Start completing quests!' : 'You have no friends in the leaderboard yet. Send some requests!'}
+                            </p>
                         </div>
                     )}
                 </div>
