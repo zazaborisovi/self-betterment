@@ -9,10 +9,11 @@ const API_URL = import.meta.env.VITE_API_URL + "/user"
 
 const UserProvider = ({children}) =>{
     const [options , setOptions] = useState(null)
+    const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
 
     const setUserOptions = async(options) =>{
-        const toastId = toast.loading("Setting optinos...")
+        const toastId = toast.loading("Setting choices...")
         try{
             const res = await fetch(API_URL + "/" , {
                 method: "POST",
@@ -35,6 +36,7 @@ const UserProvider = ({children}) =>{
     }
 
     const getUserProfile = async (id) => {
+        setLoading(true)
         try {
             const res = await fetch(API_URL + `/profile/${id}`, { method: "GET", credentials: "include" })
             const data = await res.json()
@@ -47,10 +49,12 @@ const UserProvider = ({children}) =>{
         } catch (err) {
             console.log(err.message)
             return null
+        } finally {
+            setLoading(false)
         }
     }
     return(
-        <UserContext.Provider value={{options , setOptions , setUserOptions , getUserProfile}}>
+        <UserContext.Provider value={{options , setOptions , loading, setUserOptions , getUserProfile}}>
             {children}
         </UserContext.Provider>
     )

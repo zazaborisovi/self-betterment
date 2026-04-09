@@ -1,6 +1,7 @@
 import { createContext , useContext , useState , useEffect } from "react";
 import { toast } from "react-toastify";
 
+
 const AdminContext = createContext()
 export const useAdmin = () => useContext(AdminContext)
 
@@ -8,25 +9,31 @@ const API_URL = import.meta.env.VITE_API_URL + "/admin"
 
 const AdminProvider = ({children}) =>{
     const [users , setUsers] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() =>{
         (async() =>{
-            const toastId = toast.loading("Loading users...")
+            setLoading(true)
             try{
                 const res = await fetch(API_URL , {method: "GET" , credentials: "include"})
                 const data = await res.json()
 
-                if(!res.ok) return toast.update(toastId , {render: data.message , type: "error" , autoClose: 2000})
+                if(!res.ok) {
+                    toast.error(data.message)
+                    return
+                }
 
                 setUsers(data.users)
             }catch(err){
-                return toast.update(toastId , {render: err.message , type: "error" , autoClose: 2000})
+                toast.error(err.message)
+            } finally {
+                setLoading(false)
             }
         })()
     },[])
 
     return(
-        <AdminContext.Provider value={{users}}>
+        <AdminContext.Provider value={{users, loading}}>
             {children}
         </AdminContext.Provider>
     )

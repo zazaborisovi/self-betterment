@@ -30,7 +30,7 @@ const Choices = () =>{
     }
 
     return(
-        <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-900 py-12 px-4 transition-colors duration-300">
+        <div className="h-full w-full bg-slate-50 dark:bg-slate-900 py-8 px-4 transition-colors duration-300 overflow-y-auto custom-scrollbar">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
                 <h1 className="text-4xl md:text-5xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-purple-600 to-blue-500 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 mb-15 tracking-tight">
                     Select Ones You'd Like To Do Everyday

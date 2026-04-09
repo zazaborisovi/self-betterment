@@ -11,6 +11,7 @@ const FriendProvider = ({children}) =>{
     const {socket} = useSocket()
     const [friendRequests , setFriendRequests] = useState(null)
     const [friends , setFriends] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() =>{
         if(!socket) return
@@ -23,6 +24,7 @@ const FriendProvider = ({children}) =>{
         })
         socket.on("friend-requests" , (data) =>{
             setFriendRequests(data.friendRequests)
+            setLoading(false)
         })
 
         return () =>{
@@ -95,7 +97,7 @@ const FriendProvider = ({children}) =>{
     }
 
     return(
-        <FriendContext.Provider value={{friendRequests , friends , sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend , cancelFriendRequest}}>
+        <FriendContext.Provider value={{friendRequests , friends , loading , sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend , cancelFriendRequest}}>
             {children}
         </FriendContext.Provider>
     )

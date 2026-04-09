@@ -10,6 +10,7 @@ const LeaderboardProvider = ({children}) =>{
     const {socket} = useSocket()
     const [globalLeaderboard , setGlobalLeaderboard] = useState(null)
     const [friendLeaderboard , setFriendLeaderboard] = useState(null)
+    const [loading, setLoading] = useState(true)
 
     useEffect(() =>{
         if(!socket) return
@@ -22,6 +23,7 @@ const LeaderboardProvider = ({children}) =>{
         })
         socket.on("friend-leaderboard-data" , (data) =>{
             setFriendLeaderboard(data.leaderboard)
+            setLoading(false)
         })
 
         return () =>{
@@ -35,7 +37,7 @@ const LeaderboardProvider = ({children}) =>{
     },[socket])
 
     return (
-        <LeaderboardContext.Provider value={{globalLeaderboard , friendLeaderboard}}>
+        <LeaderboardContext.Provider value={{globalLeaderboard , friendLeaderboard , loading}}>
             {children}
         </LeaderboardContext.Provider>
     )

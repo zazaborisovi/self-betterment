@@ -2,19 +2,20 @@ import { useNavigate } from "react-router"
 import { useState } from "react"
 import { useLeaderboard } from "../contexts/leaderboardContext"
 import { useAuth } from "../contexts/authContext"
+import { LeaderboardEntrySkeleton } from "./components/Skeletons"
 
 const Leaderboard = () => {
     const navigate = useNavigate()
     const { user: currentUser } = useAuth()
-    const { globalLeaderboard , friendLeaderboard } = useLeaderboard()
+    const { globalLeaderboard, friendLeaderboard, loading } = useLeaderboard()
     const [viewType, setViewType] = useState('global') // 'global' or 'friends'
-    
+
     const leaderboardData = viewType === 'global' ? globalLeaderboard : friendLeaderboard
-    
+
     return (
-        <div className="min-h-screen w-full bg-slate-50 dark:bg-slate-900 py-12 px-4 transition-colors duration-300 font-sans">
+        <div className="h-full w-full bg-slate-50 dark:bg-slate-900 py-8 px-4 transition-colors duration-300 font-sans overflow-y-auto custom-scrollbar">
             <div className="max-w-4xl mx-auto flex flex-col items-center">
-                
+
                 {/* Header section */}
                 <div className="w-full mb-8 text-center space-y-4">
                     <h1 className="text-4xl md:text-6xl font-extrabold text-transparent bg-clip-text bg-linear-to-r from-yellow-400 via-amber-500 to-orange-500 tracking-tight drop-shadow-sm">
@@ -27,13 +28,13 @@ const Leaderboard = () => {
 
                 {/* View Switcher */}
                 <div className="flex bg-slate-200/50 dark:bg-slate-800/50 p-1 rounded-2xl mb-12 backdrop-blur-sm border border-slate-200 dark:border-slate-700 w-full max-w-md mx-auto">
-                    <button 
+                    <button
                         onClick={() => setViewType('global')}
                         className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${viewType === 'global' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
                         Global
                     </button>
-                    <button 
+                    <button
                         onClick={() => setViewType('friends')}
                         className={`flex-1 py-3 px-6 rounded-xl font-bold transition-all duration-300 ${viewType === 'friends' ? 'bg-white dark:bg-slate-700 text-amber-500 shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'}`}
                     >
@@ -43,7 +44,10 @@ const Leaderboard = () => {
 
                 {/* Leaderboard Cards Grid */}
                 <div className="w-full flex flex-col gap-4">
-                    {leaderboardData?.map((user, index) => {
+                    {loading ? (
+                        [...Array(5)].map((_, i) => <LeaderboardEntrySkeleton key={i} />)
+                    ) : (
+                        leaderboardData?.map((user, index) => {
                         const isTop3 = index < 3;
                         const isCurrentUser = user._id === currentUser?._id;
                         let rankGlow = '';
@@ -69,7 +73,7 @@ const Leaderboard = () => {
                         }
 
                         return (
-                            <div 
+                            <div
                                 key={user._id}
                                 className={`relative group flex items-center justify-between p-4 md:p-6 bg-white dark:bg-slate-800 rounded-3xl border transition-all duration-300 cursor-default overflow-hidden ${rankGlow} ${isCurrentUser ? 'ring-2 ring-amber-500 dark:ring-amber-400 shadow-lg' : ''}`}
                             >
@@ -78,8 +82,8 @@ const Leaderboard = () => {
                                     <div className={`w-12 h-12 md:w-14 md:h-14 font-black text-xl md:text-2xl rounded-2xl flex items-center justify-center shrink-0 ${positionBadgeColor}`}>
                                         #{index + 1}
                                     </div>
-                                    
-                                    <div className="flex-grow flex items-center justify-between">
+
+                                    <div className="grow flex items-center justify-between">
                                         <div className="flex flex-col">
                                             <div className="flex items-center gap-3">
                                                 <span className="text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-[120px] sm:max-w-[250px] cursor-pointer hover:text-amber-500 transition-colors" onClick={() => navigate(`/user/${user._id}`)}>
@@ -92,10 +96,10 @@ const Leaderboard = () => {
                                                 )}
                                             </div>
                                             <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mt-1">
-                                                {user.xp} EXP
+                                                {user.xp.current} EXP
                                             </span>
                                         </div>
-                                        
+
                                         <div className="flex flex-col items-center">
                                             <span className="text-xs font-black uppercase tracking-widest text-slate-400 dark:text-slate-500 mb-1">Rank</span>
                                             <span className={`text-3xl md:text-4xl font-black text-transparent bg-clip-text bg-linear-to-r ${rankTextColors}`}>
@@ -104,13 +108,14 @@ const Leaderboard = () => {
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 {isTop3 && (
                                     <div className={`absolute top-0 right-0 w-32 h-32 bg-linear-to-bl ${rankTextColors.replace('from-', 'from-').replace('to-', 'to-')} rounded-bl-full opacity-5 pointer-events-none transition-colors duration-300`}></div>
                                 )}
                             </div>
                         )
-                    })}
+                    })
+                    )}
 
                     {(!leaderboardData || leaderboardData.length === 0) && (
                         <div className="w-full p-16 bg-white dark:bg-slate-800 rounded-3xl shadow-[0_0_30px_rgba(0,0,0,0.05)] flex flex-col items-center justify-center text-center border-2 border-dashed border-slate-300 dark:border-slate-700">

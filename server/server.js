@@ -44,13 +44,14 @@ io.use(socketProtect)
 
 io.on("connection", (socket) =>{
     const socketUser = socket.request.user
+
     if(socketUser){
         socket.join(socketUser._id.toString())
     }
 
     // task sockets
     socket.on("complete-task" ,  async(data) =>{
-        await completeTask(io , socket , socketUser , data)
+        await completeTask(socket , socketUser , data)
     })
 
     // friend sockets
@@ -96,9 +97,7 @@ app.use("/api/oauth", oauthRouter)
 Sentry.setupExpressErrorHandler(app)
 
 Sentry.init({
-  dsn: "https://251d50b159b85eaa954433c4a8aaa3f5@o4511157497954304.ingest.us.sentry.io/4511168108888064",
-  // Setting this option to true will send default PII data to Sentry.
-  // For example, automatic IP address collection on events
+  dsn: process.env.SENTRY_DSN,
   sendDefaultPii: true,
 });
 

@@ -9,6 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL + "/tasks"
 
 const TaskProvider = ({ children }) =>{
     const [tasks , setTasks] = useState([])
+    const [loading , setLoading] = useState(true)
     const {socket} = useSocket()
     const {user , setUser} = useAuth()
 
@@ -29,6 +30,7 @@ const TaskProvider = ({ children }) =>{
 
     useEffect(() =>{
         (async() =>{
+            setLoading(true)
             try{
                 let res = await fetch(API_URL + "/" , {
                     method : 'GET',
@@ -60,11 +62,16 @@ const TaskProvider = ({ children }) =>{
                     data = await res.json()
                 }
 
-                if(!res.ok) return console.log(data.message)
+                if(!res.ok) {
+                    setLoading(false)
+                    return console.log(data.message)
+                }
 
                 setTasks(data.taskObj.tasks)
             }catch(err){
                 console.log(err)
+            }finally{
+                setLoading(false)
             }
         })()
     },[socket])
@@ -74,7 +81,7 @@ const TaskProvider = ({ children }) =>{
     }
 
     return(
-        <TaskContext.Provider value={{tasks , completeTask}}>
+        <TaskContext.Provider value={{tasks , completeTask , loading}}>
             {children}
         </TaskContext.Provider>
     )
