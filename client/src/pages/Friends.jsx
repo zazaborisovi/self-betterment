@@ -1,13 +1,16 @@
 import { useFriend } from "../contexts/friendContext"
+import { useChat } from "../contexts/chatContext"
+import { useAuth } from "../contexts/authContext"
 import { useNavigate } from "react-router"
 import { useState, useEffect, useRef } from "react"
 import { FriendCardSkeleton, RequestSkeleton } from "./components/Skeletons"
 
 const Friends = () => {
     const { friends, friendRequests, loading, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend } = useFriend()
+    const { chats } = useChat()
+    const { user } = useAuth()
     const [removalModal, setRemovalModal] = useState(null)
     const navigate = useNavigate()
-    const { user } = { user: JSON.parse(localStorage.getItem("user")) } // Fallback if context not ready
 
     const handleAccept = async (id) => {
         await acceptFriendRequest(id)
@@ -27,8 +30,10 @@ const Friends = () => {
         setRemovalModal(null)
     }
 
-    const PendingIncoming = friendRequests?.filter(req => req.to._id === user?._id)
-    const PendingOutgoing = friendRequests?.filter(req => req.from._id === user?._id)
+    const PendingIncoming = friendRequests?.filter(req => req.to?._id === user?._id || req.to === user?._id)
+    const PendingOutgoing = friendRequests?.filter(req => req.from?._id === user?._id || req.from === user?._id)
+
+    const hasNoRequests = (!PendingIncoming || PendingIncoming.length === 0) && (!PendingOutgoing || PendingOutgoing.length === 0)
 
     return (
         <div className="h-full w-full bg-slate-50 dark:bg-slate-900 py-8 px-4 transition-colors duration-300 font-sans overflow-y-auto custom-scrollbar">
@@ -75,7 +80,7 @@ const Friends = () => {
                                                         {friend.username.charAt(0).toUpperCase()}
                                                     </div>
                                                     <div>
-                                                        <h3 className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-500 transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-[120px]">
+                                                        <h3 className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-blue-500 transition-colors whitespace-nowrap overflow-hidden text-ellipsis max-w-30">
                                                             {friend.username}
                                                         </h3>
                                                         <span className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-tighter">Adventurer</span>
@@ -83,12 +88,6 @@ const Friends = () => {
                                                 </div>
 
                                                 <div className="flex items-center gap-4">
-                                                    <div className="hidden sm:flex flex-col items-center">
-                                                        <span className="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Rank</span>
-                                                        <span className="text-lg font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-amber-600">
-                                                            S
-                                                        </span>
-                                                    </div>
                                                     <div className="relative">
                                                         <button
                                                             onClick={(e) => {
@@ -100,6 +99,29 @@ const Friends = () => {
                                                         >
                                                             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="8.5" cy="7" r="4" /><line x1="18" y1="8" x2="23" y2="13" /><line x1="23" y1="8" x2="18" y2="13" /></svg>
                                                         </button>
+                                                    </div>
+                                                    <button
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            const existingChat = chats.find(c => 
+                                                                c.users.includes(friend._id)
+                                                            );
+                                                            if (existingChat) {
+                                                                navigate(`/chat/${existingChat._id}`);
+                                                            } else {
+                                                                navigate(`/chat?newFriendId=${friend._id}`);
+                                                            }
+                                                        }}
+                                                        className="p-2 text-slate-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-xl transition-all"
+                                                        title="Message"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                                    </button>
+                                                    <div className="hidden sm:flex flex-col items-center">
+                                                        <span className="text-[0.65rem] font-black text-slate-400 uppercase tracking-widest leading-none mb-1">Rank</span>
+                                                        <span className="text-lg font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-amber-600">
+                                                            {friend.rank}
+                                                        </span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -180,7 +202,7 @@ const Friends = () => {
                                         </div>
                                     )}
 
-                                    {(!friendRequests || friendRequests.length === 0) && (
+                                    {hasNoRequests && (
                                         <div className="py-8 px-4 bg-slate-50 dark:bg-slate-800/20 rounded-2xl border border-slate-200 dark:border-slate-700 text-center">
                                             <p className="text-slate-400 dark:text-slate-500 text-sm font-medium italic">No pending requests</p>
                                         </div>

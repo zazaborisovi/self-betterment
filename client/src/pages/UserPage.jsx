@@ -1,18 +1,23 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useParams, useNavigate } from "react-router";
 import { useUser } from "../contexts/userContext";
 import { useFriend } from "../contexts/friendContext";
 import { useAuth } from "../contexts/authContext";
+import { useChat } from "../contexts/chatContext";
 import { IdentitySkeleton, StatCardSkeleton } from "./components/Skeletons";
+import { useEffect, useState } from "react";
 
 const UserPage = () => {
     const { id } = useParams()
     const { getUserProfile } = useUser()
-    const { sendFriendRequest, friends, friendRequests } = useFriend()
+    const { sendFriendRequest, friends, friendRequests, loading: friendLoading } = useFriend()
+    const { chats } = useChat()
     const { user: currentUser } = useAuth()
+    const navigate = useNavigate()
     const [profile, setProfile] = useState(null)
     const [loading, setLoading] = useState(true)
 
+    
+    
     useEffect(() => {
         (async () => {
             setLoading(true)
@@ -21,16 +26,26 @@ const UserPage = () => {
             setLoading(false)
         })()
     }, [id])
-
+    
     const skills = profile?.skills || {
         body: { xp: 0, rank: "F" },
         mind: { xp: 0, rank: "F" },
         soul: { xp: 0, rank: "F" }
     }
-
-    const isFriend = friends?.some(f => f._id === profile?._id)
-    const isRequestPending = friendRequests?.some(r => r._id === profile?._id)
+    
+    const isFriend = friends?.some(f => f.user1?._id === profile?._id || f.user2?._id === profile?._id)
+    const isRequestPending = friendRequests?.some(r => r.from?._id === profile?._id || r.to?._id === profile?._id)
     const isSelf = currentUser?._id === profile?._id
+
+    const handleChat = () => {
+        const chat = chats?.find(c => c.otherUser?._id === profile?._id)
+        if (chat) {
+            navigate(`/chat/${chat._id}`)
+        } else {
+            navigate(`/chat?newFriendId=${profile?._id}`)
+        }
+    }
+
 
     const StatCard = ({ title, xp, rank, colorFrom, colorTo, shadowColor }) => (
         <div className={`relative group p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-[0_0_20px_${shadowColor}] transition-all duration-300 overflow-hidden`}>
@@ -47,7 +62,7 @@ const UserPage = () => {
                         <span className="text-xs font-bold text-slate-400">EXP</span>
                         <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{xp}</span>
                     </div>
-                    <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner">
+                    <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner"> 
                         <div className={`h-full bg-linear-to-r ${colorFrom} ${colorTo} w-full opacity-60`}></div>
                     </div>
                 </div>
@@ -105,7 +120,7 @@ const UserPage = () => {
                                         <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-slate-100">{profile.username}</h2>
                                         <p className="text-slate-500 dark:text-slate-400 font-medium italic mt-1">Adventurer</p>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shrink-0 shadow-inner min-w-[120px]">
+                                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shrink-0 shadow-inner min-w-30">
                                         <span className="text-[0.65rem] font-black uppercase tracking-widest text-slate-500 mb-1">Overall Rank</span>
                                         <span className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-amber-600 drop-shadow-sm">
                                             {profile.rank}
@@ -128,12 +143,21 @@ const UserPage = () => {
                                     {!isSelf && (
                                         <div className="shrink-0 w-full md:w-auto">
                                             {isFriend ? (
-                                                <button disabled className="w-full md:w-auto px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold cursor-default flex items-center justify-center gap-2">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                    Friends
-                                                </button>
+                                                <div className="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+                                                    <button disabled className="px-6 py-3 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 font-bold cursor-default flex items-center justify-center gap-2">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                        </svg>
+                                                        Friends
+                                                    </button>
+                                                    <button 
+                                                        onClick={handleChat}
+                                                        className="px-6 py-3 rounded-xl bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-400 font-bold hover:bg-purple-200 dark:hover:bg-purple-900/60 transition-colors flex items-center justify-center gap-2 border border-purple-200 dark:border-purple-800"
+                                                    >
+                                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                                                        Message
+                                                    </button>
+                                                </div>
                                             ) : isRequestPending ? (
                                                 <button disabled className="w-full md:w-auto px-6 py-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 font-bold cursor-default flex items-center justify-center gap-2 border border-amber-200 dark:border-amber-900/50">
                                                     Pending
@@ -164,7 +188,7 @@ const UserPage = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <StatCard
                                     title="Body"
-                                    xp={skills.body.xp}
+                                    xp={skills.body.xp.current}
                                     rank={skills.body.rank}
                                     colorFrom="from-green-400"
                                     colorTo="to-emerald-600"
@@ -172,7 +196,7 @@ const UserPage = () => {
                                 />
                                 <StatCard
                                     title="Mind"
-                                    xp={skills.mind.xp}
+                                    xp={skills.mind.xp.current}
                                     rank={skills.mind.rank}
                                     colorFrom="from-cyan-400"
                                     colorTo="to-blue-600"
@@ -180,7 +204,7 @@ const UserPage = () => {
                                 />
                                 <StatCard
                                     title="Soul"
-                                    xp={skills.soul.xp}
+                                    xp={skills.soul.xp.current}
                                     rank={skills.soul.rank}
                                     colorFrom="from-pink-400"
                                     colorTo="to-rose-600"

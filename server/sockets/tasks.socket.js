@@ -19,23 +19,19 @@ const completeTask = async (socket , socketUser , data) =>{
         task.isCompleted = !task.isCompleted
         user.xp.current += task.isCompleted ? task.xpValue : -task.xpValue
 
-        user.skills[taskCategory].xp += task.isCompleted ? task.xpValue : -task.xpValue
+        user.skills[taskCategory].xp.current += task.isCompleted ? task.xpValue : -task.xpValue
 
         updateStreak(socket , socketUser)
 
         await Promise.all([user.save() , taskObj.save()])
 
         socket.emit("task-completed" , {taskObj , update:{
-            xp: {
-                current: user.xp.current,
-                max: user.xp.max,
-            },
+            xp: user.xp,
             skills: user.skills,
             rank: user.rank,
             streak: user.streak,
         }})
     }catch(err){
-        socket.emit("error" , {message:"Something went wrong"})
         throw new Error(err)
     }
 }

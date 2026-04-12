@@ -5,8 +5,6 @@ import { toast } from "react-toastify";
 const FriendContext = createContext()
 export const useFriend = () => useContext(FriendContext)
 
-const API_URL = import.meta.env.VITE_API_URL + "/friends"
-
 const FriendProvider = ({children}) =>{
     const {socket} = useSocket()
     const [friendRequests , setFriendRequests] = useState([])

@@ -10,7 +10,7 @@ const Profile = () => {
         soul: { xp: 0, rank: "F" }
     }
 
-    const StatCard = ({ title, xp, rank, colorFrom, colorTo, shadowColor }) => (
+    const StatCard = ({ title, xp, maxXp , rank, colorFrom, colorTo, shadowColor }) => (
         <div className={`relative group p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-[0_0_20px_${shadowColor}] transition-all duration-300 overflow-hidden`}>
             <div className={`absolute top-0 right-0 w-24 h-24 bg-linear-to-bl ${colorFrom} to-transparent rounded-bl-[4rem] opacity-20 pointer-events-none transition-colors duration-300`}></div>
             <div className="relative z-10 flex flex-col h-full justify-between">
@@ -23,10 +23,10 @@ const Profile = () => {
                 <div className="mt-6 flex flex-col gap-2">
                     <div className="flex justify-between items-end">
                         <span className="text-xs font-bold text-slate-400">EXP</span>
-                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{xp}</span>
+                        <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{xp} / {maxXp}</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner">
-                        <div className={`h-full bg-linear-to-r ${colorFrom} ${colorTo} w-full opacity-60`}></div>
+                        <div className={`h-full bg-linear-to-r ${colorFrom} ${colorTo} opacity-60`} style={{width: `${xp / maxXp * 100}%`}} />
                     </div>
                 </div>
             </div>
@@ -78,7 +78,7 @@ const Profile = () => {
                                         <h2 className="text-3xl md:text-4xl font-extrabold text-slate-800 dark:text-slate-100">{user?.username}</h2>
                                         <p className="text-slate-500 dark:text-slate-400 font-medium italic mt-1">Adventurer</p>
                                     </div>
-                                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shrink-0 shadow-inner min-w-[120px]">
+                                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 shrink-0 shadow-inner min-w-30">
                                         <span className="text-[0.65rem] font-black uppercase tracking-widest text-slate-500 mb-1">Overall Rank</span>
                                         <span className="text-4xl font-black text-transparent bg-clip-text bg-linear-to-r from-yellow-400 to-amber-600 drop-shadow-sm">
                                             {user?.rank}
@@ -110,7 +110,8 @@ const Profile = () => {
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                                 <StatCard
                                     title="Body"
-                                    xp={skills.body.xp}
+                                    xp={skills.body.xp.current}
+                                    maxXp={skills.body.xp.max}
                                     rank={skills.body.rank}
                                     colorFrom="from-green-400"
                                     colorTo="to-emerald-600"
@@ -118,7 +119,8 @@ const Profile = () => {
                                 />
                                 <StatCard
                                     title="Mind"
-                                    xp={skills.mind.xp}
+                                    xp={skills.mind.xp.current}
+                                    maxXp={skills.mind.xp.max}
                                     rank={skills.mind.rank}
                                     colorFrom="from-cyan-400"
                                     colorTo="to-blue-600"
@@ -126,7 +128,8 @@ const Profile = () => {
                                 />
                                 <StatCard
                                     title="Soul"
-                                    xp={skills.soul.xp}
+                                    xp={skills.soul.xp.current}
+                                    maxXp={skills.soul.xp.max}
                                     rank={skills.soul.rank}
                                     colorFrom="from-pink-400"
                                     colorTo="to-rose-600"

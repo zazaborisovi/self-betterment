@@ -18,6 +18,8 @@ import AdminPanel from './pages/AdminPanel'
 import UserPage from './pages/UserPage'
 import FriendProvider from './contexts/friendContext'
 import Friends from './pages/Friends'
+import ChatProvider from './contexts/chatContext'
+import Chat from './pages/Chat'
 import { useEffect } from 'react'
 
 function App() {
@@ -25,7 +27,8 @@ function App() {
     <>
       <AuthProvider>
         <SocketProvider>
-          <div className="h-dvh w-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
+          <ChatProvider>
+            <div className="h-dvh w-full flex flex-col overflow-hidden bg-slate-50 dark:bg-slate-900 transition-colors duration-300">
             <Nav />
             <main className="flex-1 overflow-hidden relative">
               <Routes>
@@ -67,9 +70,15 @@ function App() {
                     <Friends />
                   </FriendProvider>
                 } />
+                <Route path="/chat/:chatId?" element={
+                  <UserProvider>
+                    <Chat />
+                  </UserProvider>
+                } />
               </Routes>
             </main>
           </div>
+          </ChatProvider>
         </SocketProvider>
       </AuthProvider>
       <ToastContainer />

@@ -56,8 +56,7 @@ const Main = () => {
                                     className="h-full bg-linear-to-r from-indigo-600 via-purple-600 to-blue-500 dark:from-indigo-400 dark:via-purple-400 dark:to-blue-400 transition-all duration-1000 ease-out relative shadow-[0_0_10px_rgba(147,51,234,0.6)]"
                                     style={{ width: `${progress}%` }}
                                 >
-                                    {/* Inner glow effect for progress bar */}
-                                    <div className="absolute inset-0 bg-white/20"></div>
+                                    <div className="absolute inset-0 bg-white/20" />
                                 </div>
                             </div>
                         </div>

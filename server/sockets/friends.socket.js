@@ -41,10 +41,11 @@ const sendFriendRequest = async(io , socket , socketUser , data) =>{
         if(await FriendRequest.findOne({$or: [{from,to}, {from:to,to:from}]})) return socket.emit("error" , {message:"Friend request already sent"})
         if(await Friendship.findOne({$or: [{user1:from,user2:to}, {user1:to,user2:from}]})) return socket.emit("error" , {message:"You are already friends"})
     
-        await FriendRequest.create({from,to})
+        const friendRequest = await FriendRequest.create({from,to})
+        const populatedRequest = await FriendRequest.findById(friendRequest._id).populate("from", "username").populate("to", "username")
     
         socket.emit("friend-request-sent" , {message: "Friend request sent successfully"})
-        io.to(to.toString()).emit("friend-request" , {message: fromUser.username + " sent you a friend request"})
+        io.to(to.toString()).emit("friend-request-received" , populatedRequest)
     }catch(err){
         console.log(err)
         socket.emit("error" , {message:"Something went wrong"})

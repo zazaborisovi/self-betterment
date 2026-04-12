@@ -1,6 +1,7 @@
-import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
 import * as Sentry from '@sentry/react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { AuthProvider } from './src/context/authContext';
+import RootNavigator from './src/navigators/RootNavigator';
 
 Sentry.init({
   dsn: 'https://379d41d17b4cd47d4cac0a03abe007a8@o4511157497954304.ingest.us.sentry.io/4511168156139520',
@@ -23,17 +24,10 @@ Sentry.init({
 
 export default Sentry.wrap(function App() {
   return (
-    <View style={styles.container}>
-      <Button title='Try!' onPress={ () => { Sentry.captureException(new Error('First error')) }}/>
-    </View>
+    <NavigationContainer>
+      <AuthProvider>
+        <RootNavigator />
+      </AuthProvider>
+    </NavigationContainer>
   );
-});
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
 });

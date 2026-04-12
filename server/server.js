@@ -19,6 +19,7 @@ const oauthRouter = require("./router/oauth.routes")
 const completeTask = require("./sockets/tasks.socket")
 const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend, cancelFriendRequest, getFriends, getFriendRequests} = require("./sockets/friends.socket")
 const {getGlobalLeaderboard , getFriendLeaderboard} = require("./sockets/leaderboard.socket")
+const {sendMessage, getChats, getMessages, joinChat, markAsRead} = require("./sockets/chat.socket")
 
 // app initialization
 const app = express()
@@ -83,6 +84,23 @@ io.on("connection", (socket) =>{
     })
     socket.on("get-friend-leaderboard" , async() =>{
         await getFriendLeaderboard(socket , socketUser)
+    })
+
+    // chat sockets
+    socket.on("send-message" , async(data) =>{
+        await sendMessage(io , socket , socketUser , data)
+    })
+    socket.on("get-chats" , async() =>{
+        await getChats(socket , socketUser)
+    })
+    socket.on("get-messages" , async(data) =>{
+        await getMessages(socket , socketUser , data)
+    })
+    socket.on("join-chat" , async(data) =>{
+        await joinChat(io , socket , socketUser , data)
+    })
+    socket.on("mark-as-read" , async(data) =>{
+        await markAsRead(socket , socketUser , data)
     })
 })
 

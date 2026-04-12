@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
-const {calculateRank , maxXpCalculator , calculateSkillRank} = require("../utils/rankCalculator")
+const {calculateRank , maxXpCalculator , calculateSkillRank, maxSkillXpCalculator} = require("../utils/rankCalculator")
 
 const UserSchema = new mongoose.Schema({
     email:{
@@ -38,9 +38,18 @@ const UserSchema = new mongoose.Schema({
         default: 0
     },
     skills:{
-        body: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}},
-        mind: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}},
-        soul: {xp: {type: Number, default: 0}, rank: {type: String , default: "F"}}
+        body: {
+            xp: {current: {type: Number , default: 0} , max: {type: Number , default: 1000}},
+            rank: {type: String , default: "F"}
+        },
+        mind: {
+            xp: {current: {type: Number , default: 0} , max: {type: Number , default: 1000}},
+            rank: {type: String , default: "F"}
+        },
+        soul: {
+            xp: {current: {type: Number , default: 0} , max: {type: Number , default: 1000}},
+            rank: {type: String , default: "F"}
+        }
     },
     choices:[{
         type: String
@@ -64,7 +73,8 @@ UserSchema.pre("save", async function(){
 
     ["body", "mind", "soul"].forEach(skill =>{
         if(this.isModified(`skills.${skill}.xp`)){
-            this.skills[skill].rank = calculateSkillRank(this.skills[skill].xp)
+            this.skills[skill].rank = calculateSkillRank(this.skills[skill].xp.current)
+            this.skills[skill].xp.max = maxSkillXpCalculator(this.skills[skill].rank)
         }
     })
     
