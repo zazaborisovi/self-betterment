@@ -1,14 +1,16 @@
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { createStackNavigator } from "@react-navigation/native-stack";
-import { useAuth } from "../context/authContext";
+import {createBottomTabNavigator} from "@react-navigation/bottom-tabs"
+import { createNativeStackNavigator } from "@react-navigation/native-stack"
+import { useAuth } from "../contexts/authContext"
+import { Signup , Signin } from "../screens/AuthScreens"
 
-const Tab = createBottomTabNavigator();
-const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator()
+const Stack = createNativeStackNavigator()
 
-export default function RootNavigator() {
-    const user = useAuth()
-    return (
-        <Tab.Navigator>
+export default function RootNavigator(){
+    const {user} = useAuth()
+
+    return(
+        <Stack.Navigator>
             {
                 !user ? (
                     <>
@@ -16,9 +18,9 @@ export default function RootNavigator() {
                         <Tab.Screen name="signin" component={Signin} />
                     </>
                 ) : (
-                    <Stack.Screen name="App" component={AppNavigator} />
+                    <Tab.Screen name="home" component={() => <Text>home</Text>} />
                 )
             }
-        </Tab.Navigator>
+        </Stack.Navigator>
     )
 }
