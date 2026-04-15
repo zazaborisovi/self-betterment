@@ -7,9 +7,10 @@ const Nav = () =>{
 
     const navItems = [
         { name: "Quests", path: "/" },
+        { name: "Friends" , path: "/friends"},
+        { name: "Chat" , path: "/chat"},
         { name: "Leaderboard", path: "/leaderboard" },
         { name: "Profile", path: "/profile" },
-        { name: "Friends" , path: "/friends"},
     ]
 
     return !user ? null : (

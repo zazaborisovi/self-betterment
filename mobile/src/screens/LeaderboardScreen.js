@@ -121,7 +121,7 @@ const LeaderboardScreen = ({ navigation }) => {
                         </View>
                         <View>
                             <View style={styles.nameRow}>
-                                <Text style={styles.usernameText} numberOfLines={1} onPress={() => navigation.navigate("profile", {userId: item._id})}>
+                                <Text style={styles.usernameText} numberOfLines={1} onPress={() => navigation.navigate("UserProfile", {userId: item._id})}>
                                     {item.username}
                                 </Text>
                                 {isCurrentUser && (

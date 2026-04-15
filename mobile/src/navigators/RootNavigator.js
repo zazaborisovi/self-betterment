@@ -39,6 +39,15 @@ const ChatStack = () => {
     )
 }
 
+const AppStack = () => {
+    return (
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="UserProfile" component={ProfileScreen} />
+        </Stack.Navigator>
+    )
+}
+
 const MainTabs = () => {
     const colorScheme = useColorScheme()
     const isDark = colorScheme === 'dark'
@@ -83,7 +92,7 @@ const MainTabs = () => {
             <Tab.Screen name="friends" component={FriendsScreen} options={{ title: 'Friends' }} />
             <Tab.Screen name="chat" component={ChatStack} options={{ title: 'Chat' }} />
             <Tab.Screen name="leaderboard" component={LeaderboardScreen} options={{ title: 'Ranks' }} />
-            <Tab.Screen name="profile" component={ProfileScreen} options={{ title: 'Profile' }} />
+            <Tab.Screen name="profile" component={ProfileScreen} options={{ title: 'Profile', unmountOnBlur: true}} />
         </Tab.Navigator>
     )
 }
@@ -91,5 +100,5 @@ const MainTabs = () => {
 export default function RootNavigator(){
     const {user} = useAuth()
 
-    return user ? <MainTabs /> : <AuthStack />
+    return user ? <AppStack /> : <AuthStack />
 }

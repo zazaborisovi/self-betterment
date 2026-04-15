@@ -21,6 +21,17 @@ const setChoices = async(socket , socketUser , data) =>{
     }
 }
 
+const getAllUsers = async(socket , socketUser) =>{
+    try{
+        const users = await User.find({_id: {$ne: socketUser._id}}).select("username email")
+        socket.emit("users-data" , {message: "users found successfully" , update: {
+            users
+        }})
+    }catch(err){
+        throw new Error(err)
+    }
+}
+
 const updateStreak = async(socket , socketUser) =>{
     try{
         const user =  await User.findById(socketUser._id)
@@ -58,4 +69,4 @@ const updateStreak = async(socket , socketUser) =>{
     }
 }
 
-module.exports = {setChoices , updateStreak}
+module.exports = {setChoices , updateStreak , getAllUsers}

@@ -14,6 +14,28 @@ const TaskProvider = ({ children }) =>{
     const {user , setUser} = useAuth()
 
     useEffect(() =>{
+        if(!socket || !user) return
+
+        if(user?.choices?.length <= 0) {
+            return navigate("/choices")
+        }
+
+        setLoading(true)
+        socket.emit("get-tasks")
+
+        const handleTasks = (data) =>{
+            setTasks(data?.taskObj?.tasks)
+            setLoading(false)
+        }
+
+        socket.on("tasks" , handleTasks)
+
+        return () =>{
+            socket.off("tasks" , handleTasks)
+        }
+    },[socket, user?._id])
+
+    useEffect(() =>{
         if(!socket) return
 
         const handleTaskCompletion = (data) =>{
@@ -28,18 +50,9 @@ const TaskProvider = ({ children }) =>{
         }
     },[socket])
 
-    useEffect(() =>{
-        if(!socket) return
-
-        socket.emit("get-tasks")
-
-        socket.on("tasks" , (data) =>{
-            setTasks(data.taskObj.tasks)
-            setLoading(false)
-        })
-    },[socket])
 
     const completeTask = async(id) =>{
+        if (!socket) return
         socket.emit("complete-task" , {taskId: id})
     }
 

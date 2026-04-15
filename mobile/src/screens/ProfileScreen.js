@@ -7,7 +7,7 @@ import { LinearGradient } from "expo-linear-gradient"
 import { Dumbbell, Brain, Heart, UserPlus, CheckCircle2, Clock, LogOut } from "lucide-react-native"
 import StatCard from "./components/StatCard"
 
-const ProfileScreen = ({ route }) => {
+const ProfileScreen = ({ route, navigation }) => {
     const { user: currentUser, signout } = useAuth()
     const { getUserProfile } = useUser()
     const { sendFriendRequest, friends, friendRequests } = useFriend()

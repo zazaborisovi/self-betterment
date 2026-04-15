@@ -16,8 +16,7 @@ const getTasks = async (socket , socketUser) =>{
         }
 
         if(!userTasks || recordDate != today){
-            const choices = socketUser.choices?.length > 0 ? socketUser.choices : ["pushups"]
-            const tasks = generateDailyTasks(socketUser.rank , choices)
+            const tasks = generateDailyTasks(socketUser.rank , (await User.findOne(socketUser._id)).choices)
             userTasks = await UserTasks.create({userId: socketUser._id , tasks})
         }
 

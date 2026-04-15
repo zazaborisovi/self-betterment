@@ -47,7 +47,7 @@ const UserPage = () => {
     }
 
 
-    const StatCard = ({ title, xp, rank, colorFrom, colorTo, shadowColor }) => (
+    const StatCard = ({ title, xp, maxXp, rank, colorFrom, colorTo, shadowColor }) => (
         <div className={`relative group p-6 rounded-3xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-lg hover:shadow-[0_0_20px_${shadowColor}] transition-all duration-300 overflow-hidden`}>
             <div className={`absolute top-0 right-0 w-24 h-24 bg-linear-to-bl ${colorFrom} to-transparent rounded-bl-[4rem] opacity-20 pointer-events-none transition-colors duration-300`}></div>
             <div className="relative z-10 flex flex-col h-full justify-between">
@@ -63,7 +63,7 @@ const UserPage = () => {
                         <span className="text-sm font-bold text-slate-700 dark:text-slate-200">{xp}</span>
                     </div>
                     <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner"> 
-                        <div className={`h-full bg-linear-to-r ${colorFrom} ${colorTo} w-full opacity-60`}></div>
+                        <div className={`h-full bg-linear-to-r ${colorFrom} ${colorTo} opacity-60`} style={{width: `${xp / maxXp * 100}%`}} />
                     </div>
                 </div>
             </div>
@@ -132,10 +132,10 @@ const UserPage = () => {
                                     <div className="grow w-full">
                                         <div className="flex justify-between items-end mb-2">
                                             <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">Total EXP</span>
-                                            <span className="text-xl font-bold text-slate-700 dark:text-slate-200">{profile.xp.current}</span>
+                                            <span className="text-xl font-bold text-slate-700 dark:text-slate-200">{profile.xp.current / profile.xp.max * 100}%</span>
                                         </div>
                                         <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-2 overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800">
-                                            <div className="h-full bg-linear-to-r from-purple-500 to-pink-500 w-full opacity-60"></div>
+                                            <div className="h-full bg-linear-to-r from-purple-500 to-pink-500 w-full opacity-60" style={{width: `${profile.xp.current / profile.xp.max * 100}%`}} />
                                         </div>
                                     </div>
 
@@ -189,6 +189,7 @@ const UserPage = () => {
                                 <StatCard
                                     title="Body"
                                     xp={skills.body.xp.current}
+                                    maxXp={skills.body.xp.max}
                                     rank={skills.body.rank}
                                     colorFrom="from-green-400"
                                     colorTo="to-emerald-600"
@@ -197,6 +198,7 @@ const UserPage = () => {
                                 <StatCard
                                     title="Mind"
                                     xp={skills.mind.xp.current}
+                                    maxXp={skills.mind.xp.max}
                                     rank={skills.mind.rank}
                                     colorFrom="from-cyan-400"
                                     colorTo="to-blue-600"
@@ -205,6 +207,7 @@ const UserPage = () => {
                                 <StatCard
                                     title="Soul"
                                     xp={skills.soul.xp.current}
+                                    maxXp={skills.soul.xp.max}
                                     rank={skills.soul.rank}
                                     colorFrom="from-pink-400"
                                     colorTo="to-rose-600"

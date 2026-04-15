@@ -19,7 +19,7 @@ const {getTasks , completeTask} = require("./sockets/tasks.socket")
 const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend, cancelFriendRequest, getFriends, getFriendRequests} = require("./sockets/friends.socket")
 const {getGlobalLeaderboard , getFriendLeaderboard} = require("./sockets/leaderboard.socket")
 const {sendMessage, getChats, getMessages, joinChat, markAsRead} = require("./sockets/chat.socket")
-const { setChoices } = require("./sockets/user.socket")
+const { setChoices, getAllUsers } = require("./sockets/user.socket")
 
 // app initialization
 const app = express()
@@ -117,6 +117,9 @@ io.on("connection", (socket) =>{
     // user sockets
     socket.on("set-choices" , async(data) =>{
         await setChoices(socket , socketUser , data)
+    })
+    socket.on("get-all-users" , async() =>{
+        await getAllUsers(socket , socketUser)
     })
 })
 

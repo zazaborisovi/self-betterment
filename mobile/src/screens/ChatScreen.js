@@ -104,10 +104,6 @@ const ChatScreen = ({ route, navigation }) => {
                     </LinearGradient>
                     <View style={styles.chatHeaderInfo}>
                         <Text style={styles.chatHeaderName}>{activeUser?.username || 'Chat'}</Text>
-                        <View style={styles.onlineRow}>
-                            <View style={styles.onlineDot} />
-                            <Text style={styles.onlineText}>ONLINE</Text>
-                        </View>
                     </View>
                 </View>
 

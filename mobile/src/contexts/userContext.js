@@ -9,6 +9,7 @@ export const useUser = () => useContext(UserContext)
 const API_URL = process.env.EXPO_PUBLIC_API_URL + "/user"
 
 const UserProvider = ({children}) =>{
+    const [users , setUsers] = useState([])
     const {user , setUser} = useAuth()
     const { socket } = useSocket()
 
@@ -23,10 +24,19 @@ const UserProvider = ({children}) =>{
             console.log(data.update)
         })
 
+        socket.on("users-data" , (data) =>{
+            setUsers(data.update.users)
+            console.log(data.update.users)
+        })
+
         return () =>{
             socket.off("choices-set" , (data) =>{
                 setUser(prev => ({...prev , ...data.update}))
                 console.log(data.update)
+            })
+            socket.off("users-data" , (data) =>{
+                setUsers(data.update.users)
+                console.log(data.update.users)
             })
         }
     }, [socket])
@@ -54,7 +64,7 @@ const UserProvider = ({children}) =>{
         }
     }
     return(
-        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile}}>
+        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , users}}>
             {children}
         </UserContext.Provider>
     )

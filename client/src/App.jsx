@@ -67,8 +67,15 @@ function App() {
                 } />
                 <Route path="/friends" element={
                   <FriendProvider>
-                    <Friends />
+                    <UserProvider>
+                      <Friends />
+                    </UserProvider>
                   </FriendProvider>
+                } />
+                <Route path='/chat' element={
+                  <UserProvider>
+                    <Chat />
+                  </UserProvider>
                 } />
                 <Route path="/chat/:chatId?" element={
                   <UserProvider>

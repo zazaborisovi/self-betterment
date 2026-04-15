@@ -1,17 +1,20 @@
-import { useState } from "react"
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, useColorScheme, Modal } from "react-native"
+import { useState , useEffect } from "react"
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, useColorScheme, Modal, TextInput } from "react-native"
+import {initialWindowMetrics, SafeAreaView} from "react-native-safe-area-context"
 import { useAuth } from "../contexts/authContext"
 import { useFriend } from "../contexts/friendContext"
 import { useChat } from "../contexts/chatContext"
-import { useNavigation } from "@react-navigation/native"
 import { LinearGradient } from "expo-linear-gradient"
-import { UserX, MessageCircle, Inbox, ArrowDownLeft, ArrowUpRight } from "lucide-react-native"
+import { UserX, MessageCircle, Inbox, ArrowDownLeft, ArrowUpRight, X, Search, UserPlus } from "lucide-react-native"
+import { useSocket } from "../contexts/socketContext"
+import { useUser } from "../contexts/userContext"
 
-const FriendsScreen = () => {
+const FriendsScreen = ({ navigation }) => {
+    const { socket } = useSocket()
     const { user } = useAuth()
     const { friends, friendRequests, loading, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend } = useFriend()
     const { chats } = useChat()
-    const navigation = useNavigation()
+    const { users } = useUser()
     const colorScheme = useColorScheme()
     const isDark = colorScheme === 'dark'
     const styles = getStyles(isDark)
@@ -19,9 +22,17 @@ const FriendsScreen = () => {
     const [activeTab, setActiveTab] = useState("friends")
     const [removalModal, setRemovalModal] = useState(null)
 
+    const [addFriendModal , setAddFriendModal] = useState(null)
+    const [search , setSearch] = useState("")
+
     const PendingIncoming = friendRequests?.filter(req => req.to?._id === user?._id || req.to === user?._id)
     const PendingOutgoing = friendRequests?.filter(req => req.from?._id === user?._id || req.from === user?._id)
     const requestCount = (PendingIncoming?.length || 0) + (PendingOutgoing?.length || 0)
+
+    const handleAddFriendModalClose = () =>{
+        setAddFriendModal(null)
+        setSearch("")
+    }
 
     const handleMessageFriend = (friendId) => {
         const existingChat = chats.find(c => c.users.includes(friendId))
@@ -46,7 +57,7 @@ const FriendsScreen = () => {
                 <TouchableOpacity
                     style={styles.friendInfo}
                     activeOpacity={0.7}
-                    onPress={() => navigation.navigate("profile", { userId: friend._id })}
+                    onPress={() => navigation.navigate("UserProfile", { userId: friend._id })}
                 >
                     <LinearGradient
                         colors={['#3b82f6', '#6366f1']}
@@ -186,6 +197,17 @@ const FriendsScreen = () => {
         )
     }
 
+    
+    useEffect(() =>{
+        if(!socket) return
+        
+        socket.emit("get-all-users")
+    }, [socket])
+    
+    const searchResults = users?.filter(u => 
+        u._id !== user?._id &&
+        u.username?.toLowerCase().includes(search.toLowerCase())
+    ) || []
     return (
         <View style={styles.container}>
             {/* Header */}
@@ -194,7 +216,14 @@ const FriendsScreen = () => {
                 <Text style={styles.headerSubtitle}>Connect with fellow seekers</Text>
             </View>
 
-            {/* add friend modal here */}
+            <TouchableOpacity
+                style={styles.addFriendBtn}
+                onPress={() => setAddFriendModal(true)}
+                activeOpacity={0.8}
+            >
+                <UserPlus color="#fff" size={18} />
+                <Text style={styles.addFriendBtnText}>Add Friend</Text>
+            </TouchableOpacity>
 
             {/* Tab Switcher */}
             <View style={styles.tabSwitcher}>
@@ -287,6 +316,59 @@ const FriendsScreen = () => {
                         </View>
                     </View>
                 </View>
+            </Modal>
+            <Modal visible={!!addFriendModal} animationType="slide" onRequestClose={handleAddFriendModalClose}>
+                <SafeAreaView style={styles.modalSlide}>
+                    <View style={styles.modalSlideHeader}>
+                        <Text style={styles.modalSlideTitle}>Add Friend</Text>
+                        <TouchableOpacity style={styles.modalCloseBtn} onPress={handleAddFriendModalClose} activeOpacity={0.8}>
+                            <X color={isDark ? '#94a3b8' : '#64748b'} size={20} />
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={styles.searchContainer}>
+                        <Search color={isDark ? '#64748b' : '#94a3b8'} size={18} />
+                        <TextInput
+                            style={styles.searchInput}
+                            placeholder="Search by username..."
+                            placeholderTextColor={isDark ? '#475569' : '#94a3b8'}
+                            value={search}
+                            onChangeText={setSearch}
+                            autoFocus
+                        />
+                    </View>
+
+                    <FlatList
+                        data={searchResults}
+                        keyExtractor={(item) => item?._id?.toString()}
+                        contentContainerStyle={styles.searchResultsList}
+                        renderItem={({ item }) => (
+                            <View style={styles.searchResultCard}>
+                                <View style={styles.searchResultInfo}>
+                                    <View style={[styles.avatar, { backgroundColor: item.avatarColor }]}>
+                                        <Text style={styles.avatarText}>{item.username[0].toUpperCase()}</Text>
+                                    </View>
+                                    <View>
+                                        <Text style={styles.friendName}>{item.username}</Text>
+                                        <Text style={styles.friendRole}>{item.role}</Text>
+                                    </View>
+                                </View>
+                                <TouchableOpacity
+                                    style={styles.addBtn}
+                                    activeOpacity={0.8}
+                                    onPress={() => {
+                                        handleAddFriendModalClose()
+                                        navigation.navigate("UserProfile", { userId: item._id })
+                                    }}
+                                >
+                                    <Text style={styles.addBtnText}>
+                                        visit page
+                                    </Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+                    />
+                </SafeAreaView>
             </Modal>
         </View>
     )
@@ -663,6 +745,120 @@ const getStyles = (isDark) => StyleSheet.create({
         color: isDark ? '#e2e8f0' : '#475569',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    modalSlide: {
+    flex: 1,
+    backgroundColor: isDark ? '#0f172a' : '#f8fafc',
+    },
+    modalSlideHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: 20,
+        paddingTop: 20,
+        paddingBottom: 16,
+    },
+    modalSlideTitle: {
+        fontSize: 28,
+        fontWeight: '900',
+        color: isDark ? '#f8fafc' : '#0f172a',
+    },
+    modalCloseBtn: {
+        width: 38,
+        height: 38,
+        borderRadius: 14,
+        backgroundColor: isDark ? '#1e293b' : '#f1f5f9',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+    },
+    searchContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginHorizontal: 20,
+        marginBottom: 16,
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+        borderRadius: 18,
+        borderWidth: 1,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+        paddingHorizontal: 14,
+        gap: 10,
+    },
+    searchInput: {
+        flex: 1,
+        paddingVertical: 14,
+        fontSize: 15,
+        color: isDark ? '#f1f5f9' : '#0f172a',
+    },
+    searchResultCard: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        backgroundColor: isDark ? '#1e293b' : '#ffffff',
+        padding: 14,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+        marginBottom: 10,
+    },
+    searchResultInfo: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        flex: 1,
+    },
+    addBtn: {
+        paddingHorizontal: 16,
+        paddingVertical: 9,
+        backgroundColor: '#6366f1',
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    addBtnText: {
+        color: '#fff',
+        fontWeight: '800',
+        fontSize: 13,
+    },
+    addBtnSent: {
+        paddingHorizontal: 16,
+        paddingVertical: 9,
+        backgroundColor: isDark ? '#1e293b' : '#f1f5f9',
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 1,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+    },
+    addBtnSentText: {
+        color: isDark ? '#64748b' : '#94a3b8',
+        fontWeight: '800',
+        fontSize: 13,
+    },
+    searchResultsList: {
+        paddingHorizontal: 20,
+        paddingBottom: 40,
+    },
+    addFriendBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    backgroundColor: '#6366f1',
+    paddingHorizontal: 18,
+    paddingVertical: 11,
+    borderRadius: 16,
+    shadowColor: '#6366f1',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
+    margin: 20
+    },
+    addFriendBtnText: {
+        color: '#fff',
+        fontWeight: '800',
+        fontSize: 15,
     },
 })
 
