@@ -1,13 +1,11 @@
-import { createContext , useContext , useState , useEffect } from "react";
-import { useAuth } from "./authContext";
-import { useSocket } from "./socketContext";
+import {createContext , useContext , useState , useEffect} from "react"
+import { useSocket } from "./socketContext"
+import { useAuth } from "./authContext"
 
 const TaskContext = createContext()
 export const useTask = () => useContext(TaskContext)
 
-const API_URL = import.meta.env.VITE_API_URL + "/tasks"
-
-const TaskProvider = ({ children }) =>{
+const TaskProvider = ({children}) =>{
     const [tasks , setTasks] = useState([])
     const [loading , setLoading] = useState(true)
     const {socket} = useSocket()
@@ -29,17 +27,30 @@ const TaskProvider = ({ children }) =>{
     },[socket])
 
     useEffect(() =>{
-        if(!socket) return
+        if(!socket || !user) return
 
+        if(!user?.choices || user?.choices?.length <= 0) {
+            setLoading(false)
+            return
+        }
+
+        setLoading(true)
         socket.emit("get-tasks")
 
-        socket.on("tasks" , (data) =>{
-            setTasks(data.taskObj.tasks)
+        const handleTasks = (data) =>{
+            setTasks(data?.taskObj?.tasks)
             setLoading(false)
-        })
-    },[socket])
+        }
+
+        socket.on("tasks" , handleTasks)
+
+        return () =>{
+            socket.off("tasks" , handleTasks)
+        }
+    },[socket, user?._id])
 
     const completeTask = async(id) =>{
+        if (!socket) return
         socket.emit("complete-task" , {taskId: id})
     }
 

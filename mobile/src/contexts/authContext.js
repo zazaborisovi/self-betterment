@@ -44,7 +44,6 @@ const AuthProvider = ({children}) =>{
             if(!res.ok) return Alert.alert("Error while signing up" , data.message)
 
             setUser(data.user)
-            data.user.choices.length > 0 ? navigation.navigate("home") : navigate("choices")
         }catch(err){
             console.log(err.message)
         }
@@ -65,7 +64,6 @@ const AuthProvider = ({children}) =>{
             if(!res.ok) return Alert.alert("Error while signing in" , data.message)
 
             setUser(data.user)
-            data.user.choices.length > 0 ? navigation.navigate("home") : navigate("choices")
         }catch(err){
             console.log(err.message)
         }

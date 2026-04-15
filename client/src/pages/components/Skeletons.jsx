@@ -50,7 +50,7 @@ export const IdentitySkeleton = () => {
                         <div className="h-10 w-48 bg-slate-200 dark:bg-slate-700 rounded-xl mx-auto md:mx-0"></div>
                         <div className="h-4 w-32 bg-slate-100 dark:bg-slate-800 rounded-md mx-auto md:mx-0"></div>
                     </div>
-                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 min-w-[120px]">
+                    <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 min-w-30">
                         <div className="h-3 w-16 bg-slate-200 dark:bg-slate-700 rounded mb-2"></div>
                         <div className="h-8 w-8 bg-slate-300 dark:bg-slate-600 rounded-lg"></div>
                     </div>

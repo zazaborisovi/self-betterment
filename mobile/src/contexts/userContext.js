@@ -1,31 +1,37 @@
-import {createContext , useContext , useEffect, useState} from "react"
-import {toast} from "react-toastify"
-import {useNavigate} from "react-router"
+import {createContext , useContext , useState , useEffect} from "react"
+import {useNavigation} from "@react-navigation/native"
+import { useAuth } from "./authContext"
+import { useSocket } from "./socketContext"
 
 const UserContext = createContext()
 export const useUser = () => useContext(UserContext)
 
-const API_URL = import.meta.env.VITE_API_URL + "/user"
+const API_URL = process.env.EXPO_PUBLIC_API_URL + "/user"
 
 const UserProvider = ({children}) =>{
     const {user , setUser} = useAuth()
-    const {socket} = useSocket()
+    const { socket } = useSocket()
 
     const [loading, setLoading] = useState(false)
-    const navigate = useNavigate()
+    const navigation = useNavigation()
 
     useEffect(() =>{
+        if(!socket) return
+
         socket.on("choices-set" , (data) =>{
             setUser(prev => ({...prev , ...data.update}))
-            navigate("/")
+            console.log(data.update)
         })
 
         return () =>{
-            socket.off("choices-set")
+            socket.off("choices-set" , (data) =>{
+                setUser(prev => ({...prev , ...data.update}))
+                console.log(data.update)
+            })
         }
     }, [socket])
 
-    const setUserOptions = async(options) =>{
+    const setUserOptions = (options) =>{
         socket.emit("set-choices" , options)
     }
 
@@ -48,7 +54,7 @@ const UserProvider = ({children}) =>{
         }
     }
     return(
-        <UserContext.Provider value={{options , setOptions , loading, setUserOptions , getUserProfile}}>
+        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile}}>
             {children}
         </UserContext.Provider>
     )

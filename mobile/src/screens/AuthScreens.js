@@ -1,5 +1,5 @@
 import { useAuth } from "../contexts/authContext";
-import GeneralAuthForm from "./components/generalAuthForm";
+import GeneralAuthForm from "./components/GeneralAuthForm";
 
 export const Signup = () =>{
     const {signup} = useAuth()

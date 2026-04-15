@@ -10,16 +10,16 @@ const Sentry = require("@sentry/node");
 
 // api imports
 const authRouter = require("./router/auth.routes")
-const taskRouter = require("./router/tasks.routes")
 const userRouter = require("./router/user.routes")
 const adminRouter = require("./router/admin.routes")
 const oauthRouter = require("./router/oauth.routes")
 
 // socket function imports
-const completeTask = require("./sockets/tasks.socket")
+const {getTasks , completeTask} = require("./sockets/tasks.socket")
 const {sendFriendRequest , acceptFriendRequest , rejectFriendRequest , removeFriend, cancelFriendRequest, getFriends, getFriendRequests} = require("./sockets/friends.socket")
 const {getGlobalLeaderboard , getFriendLeaderboard} = require("./sockets/leaderboard.socket")
 const {sendMessage, getChats, getMessages, joinChat, markAsRead} = require("./sockets/chat.socket")
+const { setChoices } = require("./sockets/user.socket")
 
 // app initialization
 const app = express()
@@ -61,6 +61,9 @@ io.on("connection", (socket) =>{
     // task sockets
     socket.on("complete-task" ,  async(data) =>{
         await completeTask(socket , socketUser , data)
+    })
+    socket.on("get-tasks" , async() =>{
+        await getTasks(socket , socketUser)
     })
 
     // friend sockets
@@ -110,11 +113,15 @@ io.on("connection", (socket) =>{
     socket.on("mark-as-read" , async(data) =>{
         await markAsRead(socket , socketUser , data)
     })
+
+    // user sockets
+    socket.on("set-choices" , async(data) =>{
+        await setChoices(socket , socketUser , data)
+    })
 })
 
 // api
 app.use("/api/auth", authRouter)
-app.use("/api/tasks", taskRouter)
 app.use("/api/user", userRouter)
 app.use("/api/admin" , adminRouter)
 app.use("/api/oauth", oauthRouter)

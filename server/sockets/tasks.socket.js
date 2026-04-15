@@ -1,6 +1,31 @@
 const User = require("../models/user.model")
 const UserTasks = require("../models/user.tasks.model")
-const updateStreak = require("./user.socket")
+const { updateStreak } = require("./user.socket")
+const generateDailyTasks = require("../utils/dailyTaskGenerator")
+
+const getTasks = async (socket , socketUser) =>{
+    try{
+        let userTasks = await UserTasks.findOne({userId: socketUser._id}).sort({createdAt: -1})
+
+        let recordDate = null
+        let today = null
+
+        if(userTasks){
+            recordDate = new Date(userTasks?.createdAt).toISOString().split('T')[0]
+            today = new Date().toISOString().split('T')[0]
+        }
+
+        if(!userTasks || recordDate != today){
+            const choices = socketUser.choices?.length > 0 ? socketUser.choices : ["pushups"]
+            const tasks = generateDailyTasks(socketUser.rank , choices)
+            userTasks = await UserTasks.create({userId: socketUser._id , tasks})
+        }
+
+        socket.emit("tasks" , {taskObj: userTasks})
+    }catch(err){
+        throw new Error(err)
+    }
+}
 
 const completeTask = async (socket , socketUser , data) =>{
     try{
@@ -36,4 +61,4 @@ const completeTask = async (socket , socketUser , data) =>{
     }
 }
 
-module.exports = completeTask
+module.exports = {completeTask , getTasks}

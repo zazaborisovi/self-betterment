@@ -1,6 +1,26 @@
 const User = require("../models/user.model")
 const UserTasks = require("../models/user.tasks.model")
 
+const setChoices = async(socket , socketUser , data) =>{
+    try{
+        const user = await User.findById(socketUser._id)
+
+        console.log(user)
+
+        if(!user) return socket.emit("error" , {message:"user not found"})
+        
+        user.choices = [...data]
+
+        console.log(user.choices)
+        await user.save()
+        socket.emit("choices-set" , {message: "choices set successfully" , update: {
+            choices: user.choices
+        }})
+    }catch(err){
+        throw new Error(err)
+    }
+}
+
 const updateStreak = async(socket , socketUser) =>{
     try{
         const user =  await User.findById(socketUser._id)
@@ -38,4 +58,4 @@ const updateStreak = async(socket , socketUser) =>{
     }
 }
 
-module.exports = updateStreak
+module.exports = {setChoices , updateStreak}
