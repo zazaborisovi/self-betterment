@@ -2,6 +2,7 @@ import {createContext , useContext , useState , useEffect} from "react"
 import { useAuth } from "./authContext"
 import { useSocket } from "./socketContext"
 import { useNavigate } from "react-router"
+import { toast } from "react-toastify"
 
 const UserContext = createContext()
 export const useUser = () => useContext(UserContext)
@@ -63,8 +64,46 @@ const UserProvider = ({children}) =>{
             setLoading(false)
         }
     }
+
+    const changeProfilePicture = async (file) =>{
+        const toastId = toast.loading("Changing profile picture...")
+        try{
+            const formData = new FormData()
+            formData.append("file", file)
+            console.log(file)
+            const res = await fetch(`${API_URL}/change-profile-picture` , {
+                method: "POST",
+                body: formData,
+                credentials: "include"
+            })
+            const data = await res.json()
+            if(!res.ok){
+                return toast.update(toastId , {
+                    render: data.message,
+                    type: "error",
+                    isLoading: false,
+                    autoClose: 3000
+                })
+            }
+            toast.update(toastId , {
+                render: data.message,
+                type: "success",
+                isLoading: false,
+                autoClose: 3000
+            })
+            setUser(data.updatedUser)
+        }catch(err){
+            toast.update(toastId , {
+                render: err.message,
+                type: "error",
+                isLoading: false,
+                autoClose: 3000
+            })
+        }
+    }
+
     return(
-        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , users}}>
+        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , changeProfilePicture , users}}>
             {children}
         </UserContext.Provider>
     )

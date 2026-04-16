@@ -1,24 +1,36 @@
 const mongoose = require("mongoose")
 const jwt = require("jsonwebtoken")
 const bcrypt = require("bcrypt")
+const validator = require("validator")
 const {calculateRank , maxXpCalculator , calculateSkillRank, maxSkillXpCalculator} = require("../utils/rankCalculator")
 
 const UserSchema = new mongoose.Schema({
     email:{
         type: String,
         required: [true , "email is required"],
-        unique: [true , "email is already in use"]
+        unique: [true , "email is already in use"],
+        validate: [validator.isEmail, "Please provide a valid email"]
     },
     username: {
         type: String,
         required: [true , "username is required"],
-        unique: [true , "username is already in use"]
+
     },
     password: {
         type: String,
         required: [true , "password is required"],
         minlength: [8 , "password must be at least 8 characters long"],
         select: false
+    },
+    profilePicture: {
+        url: {
+            type: String,
+            default: `https://res.cloudinary.com/${process.env.CLOUDINARY_CLOUD_NAME}/image/upload/q_auto/f_auto/v1776378658/default.jpg`
+        },
+        publicId: {
+            type: String,
+            default: "profile_pictures/default"
+        }
     },
     role:{
         type: [String],

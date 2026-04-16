@@ -3,7 +3,7 @@ const User = require("../models/user.model")
 
 const getGlobalLeaderboard = async(socket) =>{
     try{
-        const leaderboard = await User.find().sort({xp : -1}).select("username xp rank")
+        const leaderboard = await User.find().sort({xp : -1}).select("username xp rank profilePicture")
 
         socket.emit("global-leaderboard-data" , {leaderboard , message: "leadedrboard loaded successfully"}) 
     }catch(err){
@@ -20,13 +20,13 @@ const getFriendLeaderboard = async(socket , socketUser) =>{
                 {user1: socketUser._id},
                 {user2: socketUser._id}
             ]
-        }).populate("user1" , "username xp rank").populate("user2" , "username xp rank")
+        }).populate("user1" , "username xp rank profilePicture").populate("user2" , "username xp rank profilePicture")
         
         // Extract all unique users from friendships
         const userMap = new Map()
         
         // Add the current user first
-        const currentUser = await User.findById(userId).select("username xp rank")
+        const currentUser = await User.findById(userId).select("username xp rank profilePicture")
         if (currentUser) {
             userMap.set(userId, currentUser)
         }

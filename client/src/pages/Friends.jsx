@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/authContext"
 import { useUser } from "../contexts/userContext"
 import { useNavigate } from "react-router"
 import { UserX, MessageCircle, Inbox, ArrowDownLeft, ArrowUpRight, X, Search, UserPlus, CheckCircle2, Clock } from "lucide-react"
+import ProfilePicture from "./components/profilePicture"
 
 const Friends = () => {
     const { friends, friendRequests, loading, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, sendFriendRequest } = useFriend()
@@ -174,9 +175,7 @@ const Friends = () => {
                                         {PendingIncoming.map(req => (
                                             <div key={req._id} className="bg-white dark:bg-[#1e293b] p-4 rounded-2xl border border-slate-200 dark:border-slate-700">
                                                 <div className="flex items-center gap-3 mb-3">
-                                                    <div className="w-10 h-10 rounded-2xl bg-linear-to-br from-green-400 to-emerald-600 flex items-center justify-center text-white font-black text-base">
-                                                        {req.from?.username?.charAt(0).toUpperCase()}
-                                                    </div>
+                                                    <ProfilePicture user={req.from} />
                                                     <p className="font-bold text-slate-800 dark:text-slate-200">{req.from?.username}</p>
                                                 </div>
                                                 <div className="flex gap-2">

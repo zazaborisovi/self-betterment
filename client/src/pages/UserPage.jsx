@@ -5,6 +5,7 @@ import { useAuth } from "../contexts/authContext";
 import { useChat } from "../contexts/chatContext";
 import { IdentitySkeleton, StatCardSkeleton } from "./components/Skeletons";
 import { useEffect, useState } from "react";
+import ProfilePicture from "./components/profilePicture";
 
 const UserPage = () => {
     const { id } = useParams()
@@ -105,14 +106,7 @@ const UserPage = () => {
                         <div className="w-full bg-white dark:bg-slate-800 rounded-3xl p-6 md:p-10 shadow-xl mb-12 border border-slate-200 dark:border-slate-700 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden">
                             <div className="absolute -right-20 -top-20 w-64 h-64 bg-purple-500/10 dark:bg-purple-500/20 rounded-full blur-3xl pointer-events-none"></div>
 
-                            {/* Avatar placeholder */}
-                            <div className="w-32 h-32 md:w-40 md:h-40 shrink-0 rounded-full bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 p-1 shadow-[0_0_30px_rgba(168,85,247,0.4)]">
-                                <div className="w-full h-full rounded-full bg-slate-50 dark:bg-slate-900 flex items-center justify-center border-4 border-transparent">
-                                    <span className="text-5xl font-black text-transparent bg-clip-text bg-linear-to-br from-purple-500 to-pink-500">
-                                        {profile.username?.charAt(0).toUpperCase()}
-                                    </span>
-                                </div>
-                            </div>
+                            <ProfilePicture user={profile} />
 
                             <div className="flex flex-col gap-2 text-center md:text-left z-10 w-full">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

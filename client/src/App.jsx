@@ -41,10 +41,16 @@ function App() {
                           <Main />
                       </TaskProvider>
                     } />
-                  <Route path="/profile" element={<Profile />} />
+                  <Route path="/profile" element={
+                    <UserProvider>
+                      <Profile />
+                    </UserProvider>
+                  } />
                   <Route path="/leaderboard" element={
                     <LeaderboardProvider>
-                      <Leaderboard />
+                      <UserProvider>
+                        <Leaderboard />
+                      </UserProvider>
                     </LeaderboardProvider>
                   } />
                   <Route path="/choices" element={
