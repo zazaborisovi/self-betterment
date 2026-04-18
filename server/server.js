@@ -25,7 +25,7 @@ const { setChoices, getAllUsers } = require("./sockets/user.socket")
 // app initialization
 const app = express()
 
-
+app.use(express.static(path.join(__dirname, 'dist')))
 
 // middleware
 app.use(express.json())
@@ -140,6 +140,9 @@ app.use("/api/auth", authRouter)
 app.use("/api/user", userRouter)
 app.use("/api/admin" , adminRouter)
 app.use("/api/oauth", oauthRouter)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'dist', 'index.html'));
+});
 
 // sentry
 Sentry.setupExpressErrorHandler(app)
@@ -148,6 +151,7 @@ Sentry.init({
   dsn: process.env.SENTRY_DSN,
   sendDefaultPii: true,
 });
+
 
 // database / server connection
 mongoose.connect(process.env.MONGODB_URI).then(() =>{

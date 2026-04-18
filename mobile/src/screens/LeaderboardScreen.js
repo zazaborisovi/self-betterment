@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, useColorScheme, Platform, Dimensions } from "react-native"
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, useColorScheme, Platform, Dimensions, Image } from "react-native"
 import { useLeaderboard } from "../contexts/leaderboardContext"
 import { useAuth } from "../contexts/authContext"
 import { LinearGradient } from "expo-linear-gradient"
@@ -119,6 +119,13 @@ const LeaderboardScreen = ({ navigation }) => {
                         <View style={[styles.positionBadge, rankBadgeStyle]}>
                             {index === 0 ? <Medal color="#d97706" size={20} /> : <Text style={[styles.positionText, rankBadgeText]}>#{index + 1}</Text>}
                         </View>
+                        
+                        <Image 
+                            source={{ uri: item.profilePicture?.url }} 
+                            style={styles.avatar}
+                            defaultSource={require('../../assets/icon.png')} 
+                        />
+
                         <View>
                             <View style={styles.nameRow}>
                                 <Text style={styles.usernameText} numberOfLines={1} onPress={() => navigation.navigate("UserProfile", {userId: item._id})}>
@@ -285,6 +292,14 @@ const getStyles = (isDark) => StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 16,
+    },
+    avatar: {
+        width: 44,
+        height: 44,
+        borderRadius: 22,
+        marginRight: 16,
+        borderWidth: 1.5,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
     },
     badgeNormal: {
         backgroundColor: isDark ? 'rgba(30, 41, 59, 0.5)' : '#f1f5f9',
