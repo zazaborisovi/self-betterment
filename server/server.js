@@ -31,7 +31,6 @@ app.use(cors({
     origin: [
         `${process.env.REACT_URL}`,
         `${process.env.EXPO_URL}`,
-        ''
     ],
     credentials: true
 }))
@@ -50,7 +49,6 @@ const server = http.createServer(app)
 const io = new Server(server, {
     cors:{
         origin: [
-            "*",
             `${process.env.REACT_URL}`,
             `${process.env.EXPO_URL}`
         ],

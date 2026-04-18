@@ -6,7 +6,8 @@ const createAndSendCookie = (statusCode , user , res) =>{
     const cookieOptions = {
         httpOnly: true,
         secure: process.env.NODE_ENV == "prod",
-        sameSite: "lax",
+        sameSite: "none",
+        maxAge: 24 * 60 * 60 * 1000,
     }
 
     user.password = undefined
