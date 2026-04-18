@@ -22,6 +22,12 @@ const {getGlobalLeaderboard , getFriendLeaderboard} = require("./sockets/leaderb
 const {sendMessage, getChats, getMessages, joinChat, markAsRead} = require("./sockets/chat.socket")
 const { setChoices, getAllUsers } = require("./sockets/user.socket")
 
+// host
+app.use(express.static(path.join(__dirname, '../client/dist')));
+   app.get('*', (req, res) => {
+     res.sendFile(path.join(__dirname, '../client/dist/index.html'));
+   });
+
 // app initialization
 const app = express()
 
