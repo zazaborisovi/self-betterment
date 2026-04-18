@@ -60,7 +60,7 @@ const Main = () => {
                                 <span className="text-sm font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">
                                     Rank {currentRank} → Rank {nextRank}
                                 </span>
-                                <span className="text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-blue-500 drop-shadow-sm">{progress}%</span>
+                                <span className="text-3xl font-black text-transparent bg-clip-text bg-linear-to-r from-purple-500 to-blue-500 drop-shadow-sm">{Math.round(progress)}%</span>
                             </div>
                             <div className="w-full bg-slate-100 dark:bg-slate-900 rounded-full h-5 overflow-hidden shadow-inner border border-slate-200 dark:border-slate-800">
                                 <div
