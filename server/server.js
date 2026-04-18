@@ -8,6 +8,7 @@ const {Server} = require("socket.io")
 const socketProtect = require("./middlewares/socketProtect")
 const Sentry = require("@sentry/node");
 const {rateLimit} = require("express-rate-limit")
+const path = require("path")
 
 // api imports
 const authRouter = require("./router/auth.routes")
