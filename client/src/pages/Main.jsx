@@ -1,6 +1,8 @@
 import { useAuth } from "../contexts/authContext"
 import { useTask } from "../contexts/taskContext"
 import { TaskSkeletonList } from "../pages/components/Skeletons"
+import { Link } from "react-router"
+import { Settings } from "lucide-react"
 
 const Main = () => {
     const { user } = useAuth()
@@ -36,6 +38,15 @@ const Main = () => {
                     <p className="text-slate-500 dark:text-slate-400 text-lg md:text-xl font-medium tracking-wide">
                         Complete your objectives to level up in life
                     </p>
+                    <div className="pt-4 flex justify-center">
+                        <Link 
+                            to="/choices"
+                            className="flex items-center gap-2 px-6 py-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md hover:border-purple-400 dark:hover:border-purple-500 transition-all duration-300 group"
+                        >
+                            <Settings size={18} className="text-purple-500 group-hover:rotate-90 transition-transform duration-500" />
+                            <span className="text-sm font-bold text-slate-700 dark:text-slate-200">Manage Daily Choices</span>
+                        </Link>
+                    </div>
                 </div>
 
                 {/* Main Content Area */}

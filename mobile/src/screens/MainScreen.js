@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Dimensions, ActivityIndicator, useColorScheme } from "react-native"
 import { useAuth } from "../contexts/authContext"
 import { LinearGradient } from "expo-linear-gradient"
@@ -15,6 +15,12 @@ const MainScreen = () => {
     const isDark = colorScheme === 'dark'
     const styles = getStyles(isDark)
     const [showChoices, setShowChoices] = useState(false)
+
+    useEffect(() => {
+        if (user && (!user.choices || user.choices.length === 0)) {
+            setShowChoices(true)
+        }
+    }, [user?.choices])
 
     const progress = user?.xp ? ((user.xp.current / user.xp.max) * 100).toFixed(0) : 45
     const currentRank = user?.rank || "F"

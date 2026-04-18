@@ -1,15 +1,16 @@
 import { useState, useEffect } from "react"
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, useColorScheme, Platform } from "react-native"
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, useColorScheme, Platform, Image } from "react-native"
 import { useAuth } from "../contexts/authContext"
 import { useUser } from "../contexts/userContext"
 import { useFriend } from "../contexts/friendContext"
 import { LinearGradient } from "expo-linear-gradient"
 import { Dumbbell, Brain, Heart, UserPlus, CheckCircle2, Clock, LogOut } from "lucide-react-native"
 import StatCard from "./components/StatCard"
+import * as ImagePicker from "expo-image-picker"
 
 const ProfileScreen = ({ route, navigation }) => {
     const { user: currentUser, signout } = useAuth()
-    const { getUserProfile } = useUser()
+    const { getUserProfile , changeProfilePicture} = useUser()
     const { sendFriendRequest, friends, friendRequests } = useFriend()
 
     const colorScheme = useColorScheme()
@@ -21,10 +22,12 @@ const ProfileScreen = ({ route, navigation }) => {
 
     const [profile, setProfile] = useState(isSelf ? currentUser : null)
     const [loading, setLoading] = useState(!isSelf)
+    const [preview, setPreview] = useState(isSelf ? currentUser?.profilePicture?.url : null)
 
     useEffect(() => {
         if (isSelf) {
             setProfile(currentUser)
+            setPreview(currentUser?.profilePicture?.url)
             return
         }
         
@@ -32,6 +35,7 @@ const ProfileScreen = ({ route, navigation }) => {
             setLoading(true)
             const data = await getUserProfile(viewingUserId)
             setProfile(data)
+            setPreview(data?.profilePicture?.url)
             setLoading(false)
         })()
     }, [viewingUserId, currentUser])
@@ -67,29 +71,61 @@ const ProfileScreen = ({ route, navigation }) => {
         )
     }
 
+
+    const pickImage = async () => {
+        if (!isSelf) return
+
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync()
+        if (status !== "granted") {
+            alert("Sorry, we need camera roll permissions to make this work!")
+            return
+        }
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [1, 1],
+            quality: 0.8,
+        })
+
+        if (!result.canceled) {
+            const selectedUri = result.assets[0].uri
+            setPreview(selectedUri)
+            changeProfilePicture(selectedUri)
+        }
+    }
+
     return (
         <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-            {/* Header */}
             <View style={styles.header}>
                 <Text style={styles.headerTitle}>Character Sheet</Text>
             </View>
 
-            {/* Identity Card */}
             <View style={styles.identityCard}>
-                {/* Avatar */}
                 <View style={styles.avatarWrapper}>
-                    <LinearGradient
-                        colors={['#6366f1', '#a855f7', '#ec4899']}
-                        start={{ x: 0, y: 0 }}
-                        end={{ x: 1, y: 1 }}
-                        style={styles.avatarGradient}
+                <LinearGradient
+                    colors={['#6366f1', '#a855f7', '#ec4899']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                    style={styles.avatarGradient}
+                >
+                    <TouchableOpacity 
+                        activeOpacity={isSelf ? 0.8 : 1} 
+                        onPress={isSelf ? pickImage : null} 
+                        style={styles.avatarInner}
                     >
-                        <View style={styles.avatarInner}>
-                            <Text style={styles.avatarLetter}>
-                                {profile.username?.charAt(0).toUpperCase()}
-                            </Text>
-                        </View>
-                    </LinearGradient>
+                        {preview ? (
+                            <Image source={{ uri: preview }} style={styles.avatarImage} />
+                        ) : (
+                            <Text style={styles.avatarLetter}>{profile.username?.charAt(0).toUpperCase()}</Text>
+                        )}
+                        
+                        {isSelf && (
+                            <View style={styles.overlay}>
+                                <Text style={styles.overlayText}>UPDATE IDENTITY</Text>
+                            </View>
+                        )}
+                    </TouchableOpacity>
+                </LinearGradient>
                 </View>
 
                 {/* Name + Rank row */}
@@ -279,6 +315,25 @@ const getStyles = (isDark) => StyleSheet.create({
         fontSize: 44,
         fontWeight: '900',
         color: '#a855f7',
+    },
+    avatarImage: {
+        width: '100%',
+        height: '100%',
+        borderRadius: 52,
+    },
+    overlay: {
+        ...StyleSheet.absoluteFillObject,
+        backgroundColor: 'rgba(15, 23, 42, 0.6)',
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 52,
+    },
+    overlayText: {
+        color: '#fff',
+        fontSize: 10,
+        fontWeight: '900',
+        textAlign: 'center',
+        letterSpacing: 0.5,
     },
     identityInfo: {
         width: '100%',

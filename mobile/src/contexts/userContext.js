@@ -39,7 +39,7 @@ const UserProvider = ({children}) =>{
                 console.log(data.update.users)
             })
         }
-    }, [socket])
+    }, [socket , user.choices])
 
     const setUserOptions = (options) =>{
         socket.emit("set-choices" , options)
@@ -63,8 +63,50 @@ const UserProvider = ({children}) =>{
             setLoading(false)
         }
     }
+
+    const changeProfilePicture = async (uri) => {
+        try {
+            const formData = new FormData()
+            
+            // Extract filename and type from URI
+            const filename = uri.split('/').pop()
+            const match = /\.(\w+)$/.exec(filename)
+            const type = match ? `image/${match[1]}` : `image`
+
+            formData.append("file", {
+                uri: uri,
+                name: filename,
+                type: type
+            })
+
+            const res = await fetch(`${API_URL}/change-profile-picture`, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+                credentials: "include"
+            })
+
+            const data = await res.json()
+            if (!res.ok) {
+                console.log(data.message)
+                return null
+            }
+
+            // Update local user state
+            if (data.updatedUser) {
+                setUser(data.updatedUser)
+            }
+            
+            return data
+        } catch (err) {
+            console.log(err.message)
+            return null
+        }
+    }
     return(
-        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , users}}>
+        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , changeProfilePicture , users}}>
             {children}
         </UserContext.Provider>
     )

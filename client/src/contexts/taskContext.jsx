@@ -1,6 +1,7 @@
 import { createContext , useContext , useState , useEffect } from "react";
 import { useAuth } from "./authContext";
 import { useSocket } from "./socketContext";
+import { useNavigate } from "react-router";
 
 const TaskContext = createContext()
 export const useTask = () => useContext(TaskContext)
@@ -12,6 +13,7 @@ const TaskProvider = ({ children }) =>{
     const [loading , setLoading] = useState(true)
     const {socket} = useSocket()
     const {user , setUser} = useAuth()
+    const navigate = useNavigate()
 
     useEffect(() =>{
         if(!socket || !user) return

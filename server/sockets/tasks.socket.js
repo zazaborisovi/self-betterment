@@ -15,9 +15,20 @@ const getTasks = async (socket , socketUser) =>{
             today = new Date().toISOString().split('T')[0]
         }
 
-        if(!userTasks || recordDate != today){
-            const tasks = generateDailyTasks(socketUser.rank , (await User.findOne(socketUser._id)).choices)
-            userTasks = await UserTasks.create({userId: socketUser._id , tasks})
+        const user = await User.findById(socketUser._id)
+        if(!user) return socket.emit("error" , {message: "User not found"})
+
+        if(!userTasks || recordDate != today || userTasks.tasks.length === 0){
+            if(user.choices && user.choices.length > 0) {
+                const tasks = generateDailyTasks(user.rank , user.choices)
+                
+                if (userTasks && recordDate == today) {
+                    userTasks.tasks = tasks
+                    await userTasks.save()
+                } else {
+                    userTasks = await UserTasks.create({userId: socketUser._id , tasks})
+                }
+            }
         }
 
         socket.emit("tasks" , {taskObj: userTasks})

@@ -7,6 +7,7 @@ const http = require("http")
 const {Server} = require("socket.io")
 const socketProtect = require("./middlewares/socketProtect")
 const Sentry = require("@sentry/node");
+const {rateLimit} = require("express-rate-limit")
 
 // api imports
 const authRouter = require("./router/auth.routes")
@@ -24,6 +25,8 @@ const { setChoices, getAllUsers } = require("./sockets/user.socket")
 // app initialization
 const app = express()
 
+
+
 // middleware
 app.use(express.json())
 app.use(cors({
@@ -35,6 +38,15 @@ app.use(cors({
     credentials: true
 }))
 app.use(cookieParser())
+
+const limiter = rateLimit({
+    windowMs: 15 * 60 * 1000,
+    limit: 100,
+    standardHeaders: 'draft-8',
+    legacyHeaders: false,
+    ipv6Subnet: 56,
+})
+app.use(limiter)
 
 const server = http.createServer(app)
 const io = new Server(server, {

@@ -1,5 +1,6 @@
 const User = require("../models/user.model")
 const UserTasks = require("../models/user.tasks.model")
+const generateDailyTasks = require("../utils/dailyTaskGenerator")
 
 const setChoices = async(socket , socketUser , data) =>{
     try{
@@ -16,6 +17,22 @@ const setChoices = async(socket , socketUser , data) =>{
         socket.emit("choices-set" , {message: "choices set successfully" , update: {
             choices: user.choices
         }})
+
+        // Trigger task generation right after choices are set if they are currently empty
+        let userTasks = await UserTasks.findOne({userId: socketUser._id}).sort({createdAt: -1})
+        const today = new Date().toISOString().split('T')[0]
+        const recordDate = userTasks ? new Date(userTasks.createdAt).toISOString().split('T')[0] : null
+
+        if(!userTasks || recordDate !== today || userTasks.tasks.length === 0){
+            const tasks = generateDailyTasks(user.rank , user.choices)
+            if(userTasks && recordDate === today){
+                userTasks.tasks = tasks
+                await userTasks.save()
+            }else{
+                userTasks = await UserTasks.create({userId: socketUser._id , tasks})
+            }
+            socket.emit("tasks" , {taskObj: userTasks})
+        }
     }catch(err){
         throw new Error(err)
     }
