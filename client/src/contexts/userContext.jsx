@@ -46,6 +46,12 @@ const UserProvider = ({children}) =>{
         socket.emit("set-choices" , options)
     }
 
+    const fetchAllUsers = () => {
+        if (socket) {
+            socket.emit("get-all-users")
+        }
+    }
+
     const getUserProfile = async (id) => {
         setLoading(true)
         try {
@@ -103,7 +109,7 @@ const UserProvider = ({children}) =>{
     }
 
     return(
-        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , changeProfilePicture , users}}>
+        <UserContext.Provider value={{ loading, setUserOptions , getUserProfile , changeProfilePicture , users, fetchAllUsers}}>
             {children}
         </UserContext.Provider>
     )

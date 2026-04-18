@@ -1,9 +1,11 @@
 import { useAuth } from "../../contexts/authContext";
 import { Link, useLocation } from "react-router";
-import { Home, Users, MessageCircle, Trophy, User, LogOut } from "lucide-react";
+import { Home, Users, MessageCircle, Trophy, User, LogOut, Sun, Moon } from "lucide-react";
+import { useTheme } from "../../contexts/themeContext";
 
 const Nav = () => {
     const { user, signout } = useAuth()
+    const { isDark, setIsDark } = useTheme()
     const location = useLocation()
 
     const navItems = [
@@ -18,13 +20,8 @@ const Nav = () => {
         <nav className="sticky top-0 z-50 w-full bg-white/80 dark:bg-slate-900/90 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 transition-all duration-300">
             <div className="max-w-6xl mx-auto px-4">
                 <div className="flex justify-between h-18 items-center">
-                    {/* Logo */}
-                    <Link to="/" className="flex items-center gap-3 group">
-                        <div className="h-10 w-10 rounded-xl bg-linear-to-br from-indigo-500 via-purple-500 to-pink-500 shadow-lg shadow-purple-500/20 flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3">
-                            <span className="text-white font-black tracking-tighter text-sm">SB</span>
-                        </div>
-                        <span className="hidden md:block font-black text-xl tracking-tighter text-slate-800 dark:text-white uppercase">Self Betterment</span>
-                    </Link>
+                    {/* Space where logo was */}
+                    <div className="flex-none"></div>
 
                     {/* Nav Links */}
                     <div className="flex items-center gap-1 md:gap-2">
@@ -52,8 +49,15 @@ const Nav = () => {
                         })}
                     </div>
                     
-                    {/* Sign Out */}
-                    <div className="flex items-center">
+                    {/* Theme & Sign Out */}
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={() => setIsDark(!isDark)}
+                            className="p-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all duration-300 shadow-sm"
+                            aria-label="Toggle Theme"
+                        >
+                            {isDark ? <Sun size={18} /> : <Moon size={18} />}
+                        </button>
                         <button 
                             onClick={signout}
                             className="flex items-center gap-2 px-4 py-2 rounded-xl text-[0.6rem] md:text-sm font-black uppercase tracking-wider text-red-500/80 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-all duration-300 cursor-pointer group"

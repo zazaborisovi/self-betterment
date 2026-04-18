@@ -57,7 +57,7 @@ const AuthProvider = ({children}) =>{
             navigate("/choices")
         }catch(err){
             console.log(err)
-            toast.update(toastId , {type: "error" , message: err.message , isLoading: false , autoClose: 3000})
+            toast.update(toastId , {type: "error" , message: err , isLoading: false , autoClose: 3000})
         }
     }
     

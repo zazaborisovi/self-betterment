@@ -18,6 +18,20 @@ const getTasks = async (socket , socketUser) =>{
         const user = await User.findById(socketUser._id)
         if(!user) return socket.emit("error" , {message: "User not found"})
 
+        // Check for streak reset
+        const todayStr = new Date().toISOString().split("T")[0]
+        let yesterdayDate = new Date()
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1)
+        const yesterdayStr = yesterdayDate.toISOString().split("T")[0]
+        const lastDateStr = user.streak.lastCompletedDate ? new Date(user.streak.lastCompletedDate).toISOString().split("T")[0] : null
+
+        if (lastDateStr && lastDateStr !== todayStr && lastDateStr !== yesterdayStr) {
+            if (user.streak.currentStreak > 0) {
+                user.streak.currentStreak = 0
+                await user.save()
+            }
+        }
+
         if(!userTasks || recordDate != today || userTasks.tasks.length === 0){
             if(user.choices && user.choices.length > 0) {
                 const tasks = generateDailyTasks(user.rank , user.choices)

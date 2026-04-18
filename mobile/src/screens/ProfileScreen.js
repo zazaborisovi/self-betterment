@@ -4,7 +4,7 @@ import { useAuth } from "../contexts/authContext"
 import { useUser } from "../contexts/userContext"
 import { useFriend } from "../contexts/friendContext"
 import { LinearGradient } from "expo-linear-gradient"
-import { Dumbbell, Brain, Heart, UserPlus, CheckCircle2, Clock, LogOut } from "lucide-react-native"
+import { Dumbbell, Brain, Heart, UserPlus, CheckCircle2, Clock, LogOut, Flame, Trophy as TrophyIcon } from "lucide-react-native"
 import StatCard from "./components/StatCard"
 import * as ImagePicker from "expo-image-picker"
 
@@ -154,6 +154,28 @@ const ProfileScreen = ({ route, navigation }) => {
                             end={{ x: 1, y: 0 }}
                             style={[styles.xpBarFill, { width: `${xpProgress}%` }]}
                         />
+                    </View>
+                </View>
+
+                {/* Streak row */}
+                <View style={styles.streakRow}>
+                    <View style={styles.streakCard}>
+                        <View style={[styles.streakIconCircle, { backgroundColor: 'rgba(249, 115, 22, 0.1)' }]}>
+                            <Flame color="#f97316" size={24} fill="#f97316" />
+                        </View>
+                        <View>
+                            <Text style={styles.streakLabel}>CURRENT</Text>
+                            <Text style={styles.streakValue}>{profile?.streak?.currentStreak || 0} DAYS</Text>
+                        </View>
+                    </View>
+                    <View style={styles.streakCard}>
+                        <View style={[styles.streakIconCircle, { backgroundColor: 'rgba(245, 158, 11, 0.1)' }]}>
+                            <TrophyIcon color="#f59e0b" size={24} />
+                        </View>
+                        <View>
+                            <Text style={styles.streakLabel}>BEST</Text>
+                            <Text style={styles.streakValue}>{profile?.streak?.longestStreak || 0} DAYS</Text>
+                        </View>
                     </View>
                 </View>
 
@@ -498,6 +520,42 @@ const getStyles = (isDark) => StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
         marginLeft: 10,
+    },
+    streakRow: {
+        flexDirection: 'row',
+        width: '100%',
+        gap: 12,
+        marginTop: 8,
+        marginBottom: 8,
+    },
+    streakCard: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: isDark ? 'rgba(30, 41, 59, 0.5)' : '#f8fafc',
+        padding: 12,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: isDark ? '#334155' : '#e2e8f0',
+    },
+    streakIconCircle: {
+        width: 40,
+        height: 40,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: 12,
+    },
+    streakLabel: {
+        fontSize: 8,
+        fontWeight: '900',
+        color: isDark ? '#64748b' : '#94a3b8',
+        letterSpacing: 1,
+    },
+    streakValue: {
+        fontSize: 15,
+        fontWeight: '900',
+        color: isDark ? '#f8fafc' : '#0f172a',
     },
 })
 

@@ -56,32 +56,46 @@ const updateStreak = async(socket , socketUser) =>{
 
         if(!taskObj) return socket.emit("error" , {message: "no tasks found"})
         
+        // Only increment if EVERY task is completed
         if(taskObj.tasks.every(t => t.isCompleted)){
             const today = new Date().toISOString().split("T")[0]
-            let yesterday = new Date()
-            yesterday.setDate(yesterday.getDate() - 1)
-            yesterday = yesterday.toISOString().split("T")[0]
-            let streakLastDate = user.streak.lastCompletedDate.toISOString().split("T")[0]
+            
+            // Get yesterday as a string
+            let yesterdayDate = new Date()
+            yesterdayDate.setDate(yesterdayDate.getDate() - 1)
+            const yesterday = yesterdayDate.toISOString().split("T")[0]
+            
+            // Get last completed date as a string
+            const lastDate = user.streak.lastCompletedDate ? new Date(user.streak.lastCompletedDate).toISOString().split("T")[0] : null
 
-            if(streakLastDate !== yesterday && streakLastDate !== today){
-                user.streak.currentStreak = 0
-                if(user.streak.currentStreak > user.streak.longestStreak){
-                    user.streak.longestStreak = user.streak.currentStreak
-                }
-            }else{
-                user.streak.lastCompletedDate = today
-                user.streak.currentStreak += 1
-                if(user.streak.currentStreak > user.streak.longestStreak){
-                    user.streak.longestStreak = user.streak.currentStreak
-                }
+            if (lastDate === today) {
+                // Already completed all tasks today, don't increment again
+                return
             }
-            console.log(yesterday , today , streakLastDate , user.streak)
+
+            if (lastDate === yesterday) {
+                // Finished yesterday, increment streak
+                user.streak.currentStreak += 1
+            } else {
+                // Missed a day (or brand new), start/restart at 1
+                user.streak.currentStreak = 1
+            }
+
+            // Update longest streak if necessary
+            if (user.streak.currentStreak > user.streak.longestStreak) {
+                user.streak.longestStreak = user.streak.currentStreak
+            }
+
+            user.streak.lastCompletedDate = new Date()
             await user.save()
-            socket.emit("streak-updated", {message: `your current streak is ${user.streak.currentStreak}` , update: {
-                streak: user.streak
-            }})
+
+            socket.emit("streak-updated", {
+                message: `Quest Perfected! Current streak: ${user.streak.currentStreak} 🔥`, 
+                update: { streak: user.streak }
+            })
         }
     }catch(err){
+        console.error("Streak Error:", err)
         throw new Error(err)
     }
 }

@@ -2,10 +2,10 @@ import { useAuth } from "../contexts/authContext"
 import { IdentitySkeleton, StatCardSkeleton } from "./components/Skeletons"
 import { useUser } from "../contexts/userContext"
 import { useRef, useState } from "react"
-import { Dumbbell, Brain, Heart, Camera, Trophy } from "lucide-react"
+import { Dumbbell, Brain, Heart, Camera, Trophy, LogOut, Flame } from "lucide-react"
 
 const Profile = () => {
-    const { user, loading } = useAuth()
+    const { user, loading, signout } = useAuth()
     const { changeProfilePicture } = useUser()
 
     const fileInputRef = useRef(null)
@@ -72,6 +72,14 @@ const Profile = () => {
                         Character Sheet
                     </h1>
                     <div className="h-1.5 w-32 bg-linear-to-r from-indigo-500 to-pink-500 mx-auto rounded-full blur-[1px]"></div>
+                    
+                    <button 
+                        onClick={signout}
+                        className="mt-6 mx-auto flex items-center gap-2 px-6 py-3 rounded-2xl bg-red-500/10 hover:bg-red-500 text-red-500 hover:text-white border border-red-500/20 transition-all duration-300 font-bold uppercase tracking-widest text-xs group active:scale-95"
+                    >
+                        <LogOut size={16} className="group-hover:-translate-x-1 transition-transform" />
+                        Leave Game
+                    </button>
                 </div>
 
                 {loading ? (
@@ -204,6 +212,34 @@ const Profile = () => {
                                     shadowColor="rgba(244,114,182,0.3)"
                                     Icon={Heart}
                                 />
+                            </div>
+                        </div>
+
+                        {/* Streak Section */}
+                        <div className="w-full mt-12 mb-10">
+                            <h3 className="text-2xl font-black text-slate-800 dark:text-white mb-8 flex items-center gap-4 uppercase tracking-tighter">
+                                <span className="w-12 h-1.5 bg-linear-to-r from-orange-500 to-red-500 rounded-full"></span>
+                                Consistency Streak
+                            </h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-6 group hover:shadow-orange-500/10 transition-all">
+                                    <div className="w-16 h-16 rounded-2xl bg-orange-100 dark:bg-orange-500/10 flex items-center justify-center text-orange-500 shadow-inner group-hover:scale-110 transition-transform">
+                                        <Flame size={32} fill="currentColor" />
+                                    </div>
+                                    <div>
+                                        <p className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Current Streak</p>
+                                        <p className="text-4xl font-black text-slate-800 dark:text-white">{user?.streak?.currentStreak || 0} <span className="text-xl text-orange-500 tracking-tighter">DAYS</span></p>
+                                    </div>
+                                </div>
+                                <div className="bg-white dark:bg-slate-800 p-8 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-xl flex items-center gap-6 group hover:shadow-amber-500/10 transition-all">
+                                    <div className="w-16 h-16 rounded-2xl bg-amber-100 dark:bg-amber-500/10 flex items-center justify-center text-amber-500 shadow-inner group-hover:scale-110 transition-transform">
+                                        <Trophy size={32} />
+                                    </div>
+                                    <div>
+                                        <p className="text-[0.65rem] font-black uppercase tracking-[0.2em] text-slate-400 mb-1">Best Streak</p>
+                                        <p className="text-4xl font-black text-slate-800 dark:text-white">{user?.streak?.longestStreak || 0} <span className="text-xl text-amber-500 tracking-tighter">DAYS</span></p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </>

@@ -3,6 +3,7 @@ import { useState } from "react"
 import { useLeaderboard } from "../contexts/leaderboardContext"
 import { useAuth } from "../contexts/authContext"
 import { LeaderboardEntrySkeleton } from "./components/Skeletons"
+import { Flame } from "lucide-react"
 
 const Leaderboard = () => {
     const navigate = useNavigate()
@@ -89,6 +90,12 @@ const Leaderboard = () => {
                                                 <span className="flex gap-5 items-center text-xl md:text-2xl font-bold text-slate-800 dark:text-slate-100 truncate max-w-30 sm:max-w-30 cursor-pointer hover:text-amber-500 transition-colors" onClick={() => navigate(`/user/${user._id}`)}>
                                                     <img src={user?.profilePicture?.url} alt="" className="w-10 h-10 rounded-full" />
                                                     {user.username}
+                                                    {user?.streak?.currentStreak > 0 && (
+                                                        <span className="flex items-center gap-1 text-orange-500 text-sm font-black ml-1 animate-pulse">
+                                                            <Flame size={14} fill="currentColor" />
+                                                            {user.streak.currentStreak}
+                                                        </span>
+                                                    )}
                                                 </span>
                                                 {isCurrentUser && (
                                                     <span className="px-3 py-1 bg-amber-500 text-white text-[10px] font-black uppercase tracking-widest rounded-full shadow-sm">

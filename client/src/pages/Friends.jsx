@@ -11,13 +11,18 @@ const Friends = () => {
     const { friends, friendRequests, loading, acceptFriendRequest, rejectFriendRequest, cancelFriendRequest, removeFriend, sendFriendRequest } = useFriend()
     const { chats } = useChat()
     const { user } = useAuth()
-    const { users } = useUser()
+    const { users, fetchAllUsers } = useUser()
     const navigate = useNavigate()
 
     const [activeTab, setActiveTab] = useState("friends")
     const [removalModal, setRemovalModal] = useState(null)
     const [addFriendModal, setAddFriendModal] = useState(false)
     const [search, setSearch] = useState("")
+
+    const handleOpenAddFriend = () => {
+        fetchAllUsers()
+        setAddFriendModal(true)
+    }
 
     const PendingIncoming = friendRequests?.filter(req => req.to?._id === user?._id || req.to === user?._id)
     const PendingOutgoing = friendRequests?.filter(req => req.from?._id === user?._id || req.from === user?._id)
@@ -58,7 +63,7 @@ const Friends = () => {
 
                 {/* Add Friend Button */}
                 <button
-                    onClick={() => setAddFriendModal(true)}
+                    onClick={handleOpenAddFriend}
                     className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white font-extrabold text-base px-5 py-3 rounded-2xl shadow-lg shadow-indigo-500/30 transition-all active:scale-95 mb-6"
                 >
                     <UserPlus size={18} />

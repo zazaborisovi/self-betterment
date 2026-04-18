@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, 
 import { useLeaderboard } from "../contexts/leaderboardContext"
 import { useAuth } from "../contexts/authContext"
 import { LinearGradient } from "expo-linear-gradient"
-import { Trophy, Users, Star, Medal } from "lucide-react-native"
+import { Trophy, Users, Star, Medal, Flame } from "lucide-react-native"
 
 const { width } = Dimensions.get('window')
 
@@ -131,6 +131,12 @@ const LeaderboardScreen = ({ navigation }) => {
                                 <Text style={styles.usernameText} numberOfLines={1} onPress={() => navigation.navigate("UserProfile", {userId: item._id})}>
                                     {item.username}
                                 </Text>
+                                {item?.streak?.currentStreak > 0 && (
+                                    <View style={styles.streakContainer}>
+                                        <Flame color="#f97316" size={12} fill="#f97316" />
+                                        <Text style={styles.streakText}>{item.streak.currentStreak}</Text>
+                                    </View>
+                                )}
                                 {isCurrentUser && (
                                     <View style={styles.youBadge}>
                                         <Text style={styles.youBadgeText}>YOU</Text>
@@ -338,7 +344,22 @@ const getStyles = (isDark) => StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: isDark ? '#f8fafc' : '#0f172a',
-        maxWidth: 150,
+        maxWidth: 120,
+    },
+    streakContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+        marginLeft: 6,
+    },
+    streakText: {
+        color: '#f97316',
+        fontSize: 11,
+        fontWeight: '900',
+        marginLeft: 2,
     },
     youBadge: {
         backgroundColor: '#f59e0b',
