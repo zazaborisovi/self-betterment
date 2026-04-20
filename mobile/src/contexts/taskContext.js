@@ -32,7 +32,7 @@ const TaskProvider = ({children}) =>{
         return () =>{
             socket.off("tasks" , handleTasks)
         }
-    },[socket, user?._id])
+    },[socket, user?._id, user?.choices?.length])
 
     useEffect(() =>{
         if(!socket) return

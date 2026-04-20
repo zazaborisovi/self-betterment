@@ -25,8 +25,8 @@ const signUp = async(req , res) =>{
 
         createAndSendCookie(201 , user , res)
     }catch(err){
-        console.log(err)
-        res.status(500).json({message: err.message})
+        console.error("SIGNUP ERROR:", err)
+        res.status(500).json({message: err.message || "An unexpected error occurred during signup"})
     }
 } 
 

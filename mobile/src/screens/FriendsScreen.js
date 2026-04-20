@@ -86,9 +86,17 @@ const FriendsScreen = ({ navigation }) => {
                     >
                         <MessageCircle color={isDark ? '#818cf8' : '#6366f1'} size={18} />
                     </TouchableOpacity>
-                    <View style={styles.rankSmall}>
-                        <Text style={styles.rankSmallLabel}>RANK</Text>
-                        <Text style={styles.rankSmallValue}>{friend.rank || 'F'}</Text>
+                    <View style={styles.statGroup}>
+                        {friend?.streak?.currentStreak > 0 && (
+                            <View style={styles.streakSmall}>
+                                <Flame color="#f97316" size={12} fill="#f97316" />
+                                <Text style={styles.streakSmallValue}>{friend.streak.currentStreak}</Text>
+                            </View>
+                        )}
+                        <View style={styles.rankSmall}>
+                            <Text style={styles.rankSmallLabel}>RANK</Text>
+                            <Text style={styles.rankSmallValue}>{friend.rank || 'F'}</Text>
+                        </View>
                     </View>
                 </View>
             </View>
@@ -534,9 +542,28 @@ const getStyles = (isDark) => StyleSheet.create({
         borderWidth: 1,
         borderColor: isDark ? '#334155' : '#e2e8f0',
     },
+    statGroup: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 12,
+        paddingHorizontal: 10,
+    },
+    streakSmall: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(249, 115, 22, 0.1)',
+        paddingHorizontal: 6,
+        paddingVertical: 2,
+        borderRadius: 8,
+        gap: 2,
+    },
+    streakSmallValue: {
+        color: '#f97316',
+        fontSize: 12,
+        fontWeight: '900',
+    },
     rankSmall: {
         alignItems: 'center',
-        paddingHorizontal: 10,
     },
     rankSmallLabel: {
         fontSize: 8,

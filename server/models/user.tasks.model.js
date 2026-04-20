@@ -11,7 +11,7 @@ const userTasksSchema = new mongoose.Schema({
         unit: {
             type: String,
             required: true,
-            enum:["minutes" , "times" , "pages" , "hours" , "km" , "reps"]
+            enum:["minutes" , "times" , "pages" , "hours" , "km" , "reps" , "liters" , "calls" , "items"]
         },
         xpValue: Number,
         category: {type: String , enum:["body" , "mind" , "soul"]},

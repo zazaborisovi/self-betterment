@@ -35,7 +35,15 @@ const MainScreen = () => {
     const renderHeader = () => (
         <View style={styles.headerContainer}>
             <View style={styles.headerTextContainer}>
-                <Text style={styles.title}>Daily Quests</Text>
+                <View style={styles.titleRow}>
+                    <Text style={styles.title}>Daily Quests</Text>
+                    {user?.streak?.currentStreak > 0 && (
+                        <View style={styles.streakBadge}>
+                            <Flame color="#f97316" size={24} fill="#f97316" />
+                            <Text style={styles.streakBadgeText}>{user.streak.currentStreak}</Text>
+                        </View>
+                    )}
+                </View>
                 <Text style={styles.subtitle}>Complete your objectives to level up</Text>
             </View>
 
@@ -212,6 +220,30 @@ const getStyles = (isDark) => StyleSheet.create({
     headerTextContainer: {
         alignItems: 'center',
         marginBottom: 24,
+        width: '100%',
+    },
+    titleRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: 12,
+        marginBottom: 8,
+    },
+    streakBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: isDark ? 'rgba(249, 115, 22, 0.15)' : 'rgba(249, 115, 22, 0.1)',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        borderWidth: 1,
+        borderColor: 'rgba(249, 115, 22, 0.3)',
+    },
+    streakBadgeText: {
+        color: '#f97316',
+        fontSize: 18,
+        fontWeight: '900',
+        marginLeft: 6,
     },
     title: {
         fontSize: 36,

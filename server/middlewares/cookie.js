@@ -3,10 +3,11 @@
 const createAndSendCookie = (statusCode , user , res) =>{
     const token = user.generateToken()
 
+    const isProd = process.env.NODE_ENV === "prod"
     const cookieOptions = {
         httpOnly: true,
-        secure: process.env.NODE_ENV == "prod",
-        sameSite: "none",
+        secure: isProd,
+        sameSite: isProd ? "none" : "lax",
         maxAge: 24 * 60 * 60 * 1000,
     }
 

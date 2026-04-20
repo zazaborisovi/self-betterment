@@ -28,6 +28,11 @@ const UserProvider = ({children}) =>{
             setUsers(data.update.users)
             console.log(data.update.users)
         })
+        
+        socket.on("streak-updated" , (data) =>{
+            setUser(prev => ({...prev , ...data.update}))
+            console.log("Streak updated:" , data.update)
+        })
 
         return () =>{
             socket.off("choices-set" , (data) =>{
@@ -38,8 +43,12 @@ const UserProvider = ({children}) =>{
                 setUsers(data.update.users)
                 console.log(data.update.users)
             })
+            socket.off("streak-updated" , (data) =>{
+                setUser(prev => ({...prev , ...data.update}))
+                console.log("Streak updated:" , data.update)
+            })
         }
-    }, [socket , user.choices])
+    }, [socket , user?.choices])
 
     const setUserOptions = (options) =>{
         socket.emit("set-choices" , options)

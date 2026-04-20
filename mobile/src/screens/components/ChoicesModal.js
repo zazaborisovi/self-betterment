@@ -10,12 +10,21 @@ const choiceArr = [
     { value: "Pushups", type: "body" },
     { value: "Morning Jog", type: "body" },
     { value: "Plank", type: "body" },
+    { value: "Squats", type: "body" },
+    { value: "Stretching", type: "body" },
+    { value: "Hydration", type: "body" },
     { value: "Read Book", type: "mind" },
     { value: "Coding Sprint", type: "mind" },
     { value: "Logic Puzzles", type: "mind" },
+    { value: "Learn Language", type: "mind" },
+    { value: "Write Code", type: "mind" },
+    { value: "Audiobook", type: "mind" },
     { value: "Meditation", type: "soul" },
     { value: "Journal Entry", type: "soul" },
-    { value: "Digital Detox", type: "soul" }
+    { value: "Digital Detox", type: "soul" },
+    { value: "Nature Walk", type: "soul" },
+    { value: "Social Connection", type: "soul" },
+    { value: "Gratitude List", type: "soul" }
 ]
 
 const ChoicesModal = ({ visible, onClose }) => {
